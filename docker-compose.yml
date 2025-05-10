@@ -1,54 +1,83 @@
 services:
-  hadoop_namenode:
-    container_name: hadoop_namenode
+  namenode:
+    container_name: namenode
     build: # build the image
       context: https://github.com/AlessandroFinocchi/docker-hadoop.git
     networks: # networks to connect
       hadoop_network: # the name of the network
         ipv4_address: 10.0.0.10 # static ip of the container
     ports:
-      - "9860:9860"
+      - "9870:9870"
     tty: true
     stdin_open: true
-    environment:
-      - LOGGING=0
     volumes:
       - ./hdfs/bootstrap_namenode.sh:/usr/local/bootstrap_namenode.sh
+      - ./hdfs/test_file.txt:/usr/local/test_file.txt
     entrypoint: ["sh", "/usr/local/bootstrap_namenode.sh" ]
 
-  hadoop_datanode1:
-    container_name: hadoop_datanode1
+  datanode1:
+    container_name: datanode1
     build: # build the image
       context: https://github.com/AlessandroFinocchi/docker-hadoop.git
     networks: # networks to connect
       hadoop_network: # the name of the network
         ipv4_address: 10.0.0.11 # static ip of the container
     ports:
-      - "9861:9861"
+      - "9864:9864"
     tty: true
     stdin_open: true
-    environment:
-      - LOGGING=0
     volumes:
       - ./hdfs/bootstrap_datanode.sh:/usr/local/bootstrap_datanode.sh
     entrypoint: ["sh", "/usr/local/bootstrap_datanode.sh" ]
 
-  hadoop_datanode2:
-    container_name: hadoop_datanode2
+  datanode2:
+    container_name: datanode2
     build: # build the image
       context: https://github.com/AlessandroFinocchi/docker-hadoop.git
     networks: # networks to connect
       hadoop_network: # the name of the network
         ipv4_address: 10.0.0.12 # static ip of the container
     ports:
-      - "9862:9862"
+      - "9863:9864"
     tty: true
     stdin_open: true
-    environment:
-      - LOGGING=0
     volumes:
       - ./hdfs/bootstrap_datanode.sh:/usr/local/bootstrap_datanode.sh
     entrypoint: ["sh", "/usr/local/bootstrap_datanode.sh" ]
+
+  spark-master:
+    image: apache/spark:3.5.0
+    container_name: spark-master
+    hostname: spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
+    environment:
+      - SPARK_MODE=master
+      - SPARK_CONF_spark_hadoop_fs_defaultFS=hdfs://namenode:54310
+    ports:
+      - '8080:8080'
+      - '7077:7077'
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./spark/query_test.py:/opt/spark/query_test.py
+    networks:
+      hadoop_network: # the name of the network
+        ipv4_address: 10.0.0.20 # static ip of the container
+
+  spark-worker:
+    image: apache/spark:3.5.0
+    container_name: spark-worker
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    tty: true
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_CONF_spark_hadoop_fs_defaultFS=hdfs://namenode:54310
+    networks:
+      hadoop_network: # the name of the network
+        ipv4_address: 10.0.0.21 # static ip of the container
 
 networks:
   hadoop_network:
