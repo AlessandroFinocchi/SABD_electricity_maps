@@ -1,0 +1,59 @@
+services:
+  hadoop_namenode:
+    container_name: hadoop_namenode
+    build: # build the image
+      context: https://github.com/AlessandroFinocchi/docker-hadoop.git
+    networks: # networks to connect
+      hadoop_network: # the name of the network
+        ipv4_address: 10.0.0.10 # static ip of the container
+    ports:
+      - "9860:9860"
+    tty: true
+    stdin_open: true
+    environment:
+      - LOGGING=0
+    volumes:
+      - ./hdfs/bootstrap_namenode.sh:/usr/local/bootstrap_namenode.sh
+    entrypoint: ["sh", "/usr/local/bootstrap_namenode.sh" ]
+
+  hadoop_datanode1:
+    container_name: hadoop_datanode1
+    build: # build the image
+      context: https://github.com/AlessandroFinocchi/docker-hadoop.git
+    networks: # networks to connect
+      hadoop_network: # the name of the network
+        ipv4_address: 10.0.0.11 # static ip of the container
+    ports:
+      - "9861:9861"
+    tty: true
+    stdin_open: true
+    environment:
+      - LOGGING=0
+    volumes:
+      - ./hdfs/bootstrap_datanode.sh:/usr/local/bootstrap_datanode.sh
+    entrypoint: ["sh", "/usr/local/bootstrap_datanode.sh" ]
+
+  hadoop_datanode2:
+    container_name: hadoop_datanode2
+    build: # build the image
+      context: https://github.com/AlessandroFinocchi/docker-hadoop.git
+    networks: # networks to connect
+      hadoop_network: # the name of the network
+        ipv4_address: 10.0.0.12 # static ip of the container
+    ports:
+      - "9862:9862"
+    tty: true
+    stdin_open: true
+    environment:
+      - LOGGING=0
+    volumes:
+      - ./hdfs/bootstrap_datanode.sh:/usr/local/bootstrap_datanode.sh
+    entrypoint: ["sh", "/usr/local/bootstrap_datanode.sh" ]
+
+networks:
+  hadoop_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
+          gateway: 10.0.0.254

@@ -1,0 +1,51 @@
+project-name/
+├── README.md
+├── LICENSE
+├── pyproject.toml          # o setup.py + requirements.txt
+├── .gitignore
+│
+├── conf/
+│   ├── nifi/               # configurazioni di NiFi (es. nifi.properties, registry client)
+│   ├── spark/              # spark-defaults.conf, log4j.properties
+│   └── env/                # ambienti (dev, staging, prod): .env.dev, .env.prod
+│
+├── nifi/
+│   ├── flow.xml.gz         # backup della flow corrente
+│   └── templates/          # eventuali template di process group
+│
+├── src/
+│   └── project_name/       # package Python principale
+│       ├── __init__.py
+│       ├── ingestion.py    # wrapper di interazione con HDFS / NiFi API
+│       ├── spark_session.py# creazione e configurazione di SparkSession
+│       ├── processors/
+│       │   ├── clean.py
+│       │   ├── transform.py
+│       │   └── aggregate.py
+│       └── utils/
+│           ├── hdfs_utils.py
+│           └── config.py   # caricamento parametri da conf/env
+│
+├── scripts/                # script shell / Python per deploy e run
+│   ├── submit_spark.sh     # sottomette il job Spark su yarn/cluster
+│   ├── run_nifi.sh         # avvia NiFi in contenitore o servizio
+│   └── deploy.sh           # CI/CD, upload conf e flow in NiFi registry
+│
+├── tests/                  # unit & integration test
+│   ├── test_ingestion.py
+│   ├── test_processors.py
+│   └── pytest.ini
+│
+├── notebooks/              # esplorazione dati, proof-of-concept
+│   ├── 01_data_exploration.ipynb
+│   └── 02_validation.ipynb
+│
+├── docs/
+│   ├── architecture.md     # diagramma di flusso end‐to‐end
+│   ├── data_contracts.md   # formati, schema Avro/Parquet
+│   └── runbook.md          # operazioni quotidiane, troubleshooting
+│
+├── logs/                   # log locali per debug (in prod scritti su HDFS/S3 o ELK)
+│   ├── nifi/
+│   └── spark/
+└── docker-compose.yml      # (opzionale) per avviare NiFi + HDFS in locale
