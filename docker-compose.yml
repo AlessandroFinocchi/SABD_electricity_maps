@@ -1,6 +1,8 @@
 services:
   nifi:
-    image: apache/nifi:latest
+    build:
+      context: ./nifi   # <- percorso relativo alla cartella col tuo Dockerfile
+      dockerfile: Dockerfile
     container_name: nifi
     ports:
       - '8443:8443'
