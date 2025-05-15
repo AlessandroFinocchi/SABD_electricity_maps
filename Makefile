@@ -1,4 +1,4 @@
-.PHONY: docker_gen docker_clean
+.PHONY: gen clean query
 
 gen:
 	docker compose up -d

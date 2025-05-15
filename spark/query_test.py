@@ -8,9 +8,12 @@ if __name__ == "__main__":
         .getOrCreate()
 
     # Read the text file from HDFS
-    df = spark.read.text("hdfs://namenode:54310/user/hdfs/test_file.txt")
+    df = spark.read.text("hdfs://namenode:54310/data/test_file.txt")
+
+    df.write.text("hdfs://namenode:54310/data/results.txt")
 
     # Count the number of rows
     row_count = df.count()
 
     print(f"Number of rows in test_file.txt: {row_count}")
+
