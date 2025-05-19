@@ -1,23 +1,23 @@
 services:
-  nifi:
-    container_name: nifi
-    build:
-      context: .   # relative path to the Nifi Dockerfile
-      dockerfile: ./nifi/Dockerfile
-    networks: # networks to connect
-      hadoop_network: # the name of the network
-        ipv4_address: 10.0.0.9 # static ip of the container
-    ports:
-      - '8443:8443'
-    volumes:
-      - ./hdfs/conf:/etc/hadoop/conf
-      - ./nifi/libs/nifi-hadoop-nar-2.4.0.nar:/opt/nifi/nifi-current/lib/nifi-hadoop-nar-2.4.0.nar
-      - ./nifi/libs/nifi-hadoop-libraries-nar-2.4.0.nar:/opt/nifi/nifi-current/lib/nifi-hadoop-libraries-nar-2.4.0.nar
-#      - ./nifi/flow.json.gz:/opt/nifi/nifi-current/conf/flow.json.gz
-    environment:
-      NIFI_WEB_HTTP_PORT: '8443'
-      SINGLE_USER_CREDENTIALS_USERNAME: 'admin'
-      SINGLE_USER_CREDENTIALS_PASSWORD: 'ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB'
+#  nifi:
+#    container_name: nifi
+#    build:
+#      context: .   # relative path to the Nifi Dockerfile
+#      dockerfile: ./nifi/Dockerfile
+#    networks: # networks to connect
+#      hadoop_network: # the name of the network
+#        ipv4_address: 10.0.0.9 # static ip of the container
+#    ports:
+#      - '8443:8443'
+#    volumes:
+#      - ./hdfs/conf:/etc/hadoop/conf
+#      - ./nifi/libs/nifi-hadoop-nar-2.4.0.nar:/opt/nifi/nifi-current/lib/nifi-hadoop-nar-2.4.0.nar
+#      - ./nifi/libs/nifi-hadoop-libraries-nar-2.4.0.nar:/opt/nifi/nifi-current/lib/nifi-hadoop-libraries-nar-2.4.0.nar
+##      - ./nifi/flow.json.gz:/opt/nifi/nifi-current/conf/flow.json.gz
+#    environment:
+#      NIFI_WEB_HTTP_PORT: '8443'
+#      SINGLE_USER_CREDENTIALS_USERNAME: 'admin'
+#      SINGLE_USER_CREDENTIALS_PASSWORD: 'ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB'
 
   namenode:
     container_name: namenode
@@ -81,7 +81,7 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - ./spark:/opt/spark/scripts
+      - ./spark/scripts:/opt/spark/scripts
     networks:
       hadoop_network: # the name of the network
         ipv4_address: 10.0.0.20 # static ip of the container
