@@ -1,11 +1,15 @@
-.PHONY: gen clean query
+.PHONY: gen clean query nifi gzip
 
 gen:
 	docker compose up -d
 
 clean:
 	docker compose down
-	docker images | grep "sabd*" | awk '{print $3}' | xargs docker rmi # remove all images with name "hadoop*"
+	docker volume ls -q | xargs docker volume rm
+	docker images | grep "sabd*" | awk '{print $3}' | xargs docker rmi
 
 query:
-	docker exec -it spark-master /opt/spark/bin/spark-submit /opt/spark/query_test.py
+	docker exec -it spark-master /opt/spark/bin/spark-submit /opt/spark/scripts/query_test.py
+
+nifi:
+	docker exec -it spark-master /opt/spark/bin/spark-submit /opt/spark/scripts/nifi_runner.py
