@@ -1,12 +1,11 @@
-.PHONY: gen clean query nifi gzip
+.PHONY: gen clean scrape query nifi
 
 gen:
 	docker compose up -d
 
 clean:
-	docker compose down
+	docker compose down -v
 	docker images | grep "sabd*" | awk '{print $3}' | xargs docker rmi
-	docker volume ls -q | xargs docker volume rm
 
 scrape:
 	docker exec -it spark-master /opt/spark/bin/spark-submit /opt/spark/scripts/scraper.py

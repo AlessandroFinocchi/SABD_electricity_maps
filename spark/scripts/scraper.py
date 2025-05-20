@@ -29,4 +29,5 @@ if __name__ == '__main__':
 
             df = spark.read.csv(path, header=True, inferSchema=True)
             df.write.mode("overwrite").csv(f'{hdfs_base}/data/{country}_{year}.csv', header=True)
+            df.write.mode("overwrite").parquet(f'{hdfs_base}/data/{country}_{year}.parquet')
             os.remove(path)

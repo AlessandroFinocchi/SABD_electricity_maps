@@ -1,23 +1,24 @@
 services:
-#  nifi:
-#    container_name: nifi
-#    build:
-#      context: .   # relative path to the Nifi Dockerfile
-#      dockerfile: ./nifi/Dockerfile
-#    networks: # networks to connect
-#      hadoop_network: # the name of the network
-#        ipv4_address: 10.0.0.9 # static ip of the container
-#    ports:
-#      - '8443:8443'
+  nifi:
+    container_name: nifi
+    build:
+      context: ./nifi   # relative path to the Nifi Dockerfile
+      dockerfile: Dockerfile
+    networks: # networks to connect
+      hadoop_network: # the name of the network
+        ipv4_address: 10.0.0.9 # static ip of the container
+    ports:
+      - '8443:8443'
 #    volumes:
-#      - ./hdfs/conf:/etc/hadoop/conf
-#      - ./nifi/libs/nifi-hadoop-nar-2.4.0.nar:/opt/nifi/nifi-current/lib/nifi-hadoop-nar-2.4.0.nar
-#      - ./nifi/libs/nifi-hadoop-libraries-nar-2.4.0.nar:/opt/nifi/nifi-current/lib/nifi-hadoop-libraries-nar-2.4.0.nar
-##      - ./nifi/flow.json.gz:/opt/nifi/nifi-current/conf/flow.json.gz
-#    environment:
-#      NIFI_WEB_HTTP_PORT: '8443'
-#      SINGLE_USER_CREDENTIALS_USERNAME: 'admin'
-#      SINGLE_USER_CREDENTIALS_PASSWORD: 'ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB'
+#      - ./hdfs/hdfs_conf:/etc/hadoop/hdfs_conf
+#      - ./nifi/lib/nifi-hadoop-nar-2.4.0.nar:/opt/nifi/nifi-current/lib/nifi-hadoop-nar-2.4.0.nar
+#      - ./nifi/lib/nifi-hadoop-libraries-nar-2.4.0.nar:/opt/nifi/nifi-current/lib/nifi-hadoop-libraries-nar-2.4.0.nar
+#      - ./nifi/flow.json.gz:/opt/nifi/nifi-current/hdfs_conf/flow.json.gz
+    environment:
+      NIFI_WEB_HTTP_PORT: '8443'
+      SINGLE_USER_CREDENTIALS_USERNAME: 'admin'
+      SINGLE_USER_CREDENTIALS_PASSWORD: 'ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB'
+      NIFI_HOME: '/opt/nifi/nifi-current'
 
   namenode:
     container_name: namenode
