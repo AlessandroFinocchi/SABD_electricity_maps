@@ -1,4 +1,4 @@
-.PHONY: gen clean scrape query nifi
+.PHONY: gen clean scrape query nifi cp_flow
 
 gen:
 	docker compose up -d
@@ -15,3 +15,6 @@ query:
 
 nifi:
 	docker exec -it spark-master /opt/spark/bin/spark-submit /opt/spark/scripts/nifi_runner.py
+
+cp_flow:
+	docker cp nifi:/opt/nifi/nifi-current/conf/flow.json.gz nifi/flow.json.gz
