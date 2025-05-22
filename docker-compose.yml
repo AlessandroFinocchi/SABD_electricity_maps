@@ -29,7 +29,6 @@ services:
     stdin_open: true
     volumes:
       - ./hdfs/bootstrap_namenode.sh:/usr/local/bootstrap_namenode.sh
-      - ./hdfs/test_file.txt:/usr/local/test_file.txt
     entrypoint: ["sh", "/usr/local/bootstrap_namenode.sh" ]
 
   datanode1:

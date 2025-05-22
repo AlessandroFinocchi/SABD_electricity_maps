@@ -1,53 +1,74 @@
 import requests
 import urllib3
+from enum import Enum
 
-# Disable InsecureRequestWarning
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-nifi_host = "localhost"
-nifi_port = "8443"
-clientId = "b9112890-f366-44d4-a0d3-6ed7f4d53cec"
-pg_id = "6f8f46ad-5017-32f9-8d71-b68fca956eb3"
+NIFI_HOST = "localhost"
+NIFI_PORT = "8443"
+CLIENT_ID = "b9112890-f366-44d4-a0d3-6ed7f4d53cec"
+PG_ID     = "6f8f46ad-5017-32f9-8d71-b68fca956eb3"
+BASE_URL  = f"https://{NIFI_HOST}:{NIFI_PORT}"
 
-base_url = f"https://{nifi_host}:{nifi_port}"
+class State(Enum):
+    RUNNING = "RUNNING"
+    STOPPED = "STOPPED"
 
-# Step 1: Get JWT token
-auth_url = f"{base_url}/nifi-api/access/token"
-auth_data = {
-    "username": "admin",
-    "password": "ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB"
-}
-headers_auth = {
-    "Content-Type": "application/x-www-form-urlencoded"
-}
+def get_jwt() -> str:
+    auth_url = f"{BASE_URL}/nifi-api/access/token"
+    auth_data = {
+        "username": "admin",
+        "password": "ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB"
+    }
+    headers_auth = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
 
-response = requests.post(auth_url, headers=headers_auth, data=auth_data, verify=False)
-response.raise_for_status()
-jwt = response.text  # The token is returned as plain text
+    response = requests.post(auth_url, headers=headers_auth, data=auth_data, verify=False)
+    response.raise_for_status()
+    jwt = response.text  # The token is returned as plain text
 
-# Step 2: Get root process group ID
-root_pg_url = f"{base_url}/nifi-api/process-groups/root"
-headers_authz = {
-    "Authorization": f"Bearer {jwt}"
-}
-response = requests.get(root_pg_url, headers=headers_authz, verify=False)
-response.raise_for_status()
-root_pg_json = response.json()
-root_pg = root_pg_json["id"]
+    return jwt
 
-# Step 3: Set root process group state to RUNNING
-put_url = f"{base_url}/nifi-api/flow/process-groups/{root_pg}"
-headers_put = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {jwt}"
-}
-payload = {
-    "id": root_pg,
-    "disconnectedNodeAcknowledged": False,
-    "state": "RUNNING"
-}
+def get_root_pg_id(jwt:str) -> str:
+    root_pg_url = f"{BASE_URL}/nifi-api/process-groups/root"
+    headers_authz = {
+        "Authorization": f"Bearer {jwt}"
+    }
+    response = requests.get(root_pg_url, headers=headers_authz, verify=False)
+    response.raise_for_status()
+    root_pg_json = response.json()
+    root_pg = root_pg_json["id"]
 
-response = requests.put(put_url, headers=headers_put, json=payload, verify=False)
-response.raise_for_status()
+    return root_pg
 
-print("Root process group state set to RUNNING successfully.")
+def set_pg_state(jwt:str, root_pg:str, state:State) -> None:
+    put_url = f"{BASE_URL}/nifi-api/flow/process-groups/{root_pg}"
+    headers_put = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {jwt}"
+    }
+    payload = {
+        "id": root_pg,
+        "disconnectedNodeAcknowledged": False,
+        "state": state.value
+    }
+
+    response = requests.put(put_url, headers=headers_put, json=payload, verify=False)
+    response.raise_for_status()
+
+    print(f"Root process group state set to {state.value} successfully.")
+
+def run_nifi_flow():
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    jwt = get_jwt()
+    root_pg = get_root_pg_id(jwt)
+    set_pg_state(jwt, root_pg, State.RUNNING)
+
+def stop_nifi_flow():
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    jwt = get_jwt()
+    root_pg = get_root_pg_id(jwt)
+    set_pg_state(jwt, root_pg, State.STOPPED)
+
+if __name__ == '__main__':
+    stop_nifi_flow()
