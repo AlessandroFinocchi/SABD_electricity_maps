@@ -3,5 +3,5 @@ _FORMATS = {
     "PARQUET": "parquet"
 }
 
-CACHE = False
+USE_CACHE = False
 FORMAT = _FORMATS["CSV"]
