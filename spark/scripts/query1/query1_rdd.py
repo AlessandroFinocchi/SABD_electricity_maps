@@ -27,3 +27,7 @@ if __name__ == "__main__":
 
     rdd_join = rdd_extremes.join(rdd_avg) \
                            .mapValues(lambda pair: pair[0] + pair[1])
+
+    # sc.write.csv(rdd_join, header=True)
+
+

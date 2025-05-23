@@ -1,4 +1,4 @@
-FROM apache/nifi:latest
+FROM apache/nifi:2.4.0
 
 RUN mkdir $NIFI_HOME/conf/hadoop
 
