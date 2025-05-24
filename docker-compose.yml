@@ -1,6 +1,7 @@
 services:
   nifi:
     container_name: nifi
+    hostname: nifi
     build:
       context: ./nifi   # relative path to the Nifi Dockerfile
       dockerfile: Dockerfile
