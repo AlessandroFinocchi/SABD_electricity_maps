@@ -14,6 +14,8 @@ hdfs dfs -setfacl -R -m user:root:rwx /data     # 3) set ACL rwx permissions for
 hdfs dfs -setfacl -R -m user:nifi:rwx /data     # 4) set ACL rwx permissions for nifi user
 hdfs dfs -setfacl -R -m user:dr.who:rwx /data   # 5) set ACL rwx permissions for webUI user
 
+apt-get install jq
+
 echo "I'm a namenode"
 
 # Launch bash console  

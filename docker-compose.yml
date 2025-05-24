@@ -78,7 +78,7 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - ./spark/scripts:/opt/spark/scripts
+      - ./spark/src:/opt/spark/src
     networks:
       hadoop_network: # the name of the network
         ipv4_address: 10.0.0.20 # static ip of the container

@@ -3,7 +3,7 @@ import urllib3
 from enum import Enum
 
 
-NIFI_HOST = "localhost"
+NIFI_HOST = "nifi"
 NIFI_PORT = "8443"
 CLIENT_ID = "b9112890-f366-44d4-a0d3-6ed7f4d53cec"
 PG_ID     = "6f8f46ad-5017-32f9-8d71-b68fca956eb3"

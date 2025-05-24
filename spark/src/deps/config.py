@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Formats(Enum):
     CSV     = "csv"
     PARQUET = "parquet"
