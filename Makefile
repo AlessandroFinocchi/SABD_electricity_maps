@@ -15,4 +15,4 @@ deps:
 
 query1:
 	docker exec -it spark-master /opt/spark/bin/spark-submit \
-		--py-files /opt/spark/code/src/deps/deps.zip /opt/spark/code/src/query1/query1_df.py
+		--py-files /opt/spark/code/src/deps/deps.zip /opt/spark/code/src/query1/query1_sql.py

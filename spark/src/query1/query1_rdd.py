@@ -11,7 +11,7 @@ import time
 
 if __name__ == "__main__":
 spark = SparkSession.builder \
-    .appName("Query 1") \
+    .appName("Query 1 - RDD") \
     .config("spark.hadoop.fs.defaultFS", "hdfs://namenode:54310") \
     .getOrCreate()
 sc = spark.sparkContext
