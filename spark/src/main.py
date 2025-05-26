@@ -22,8 +22,8 @@ if __name__ =="__main__":
     }
     try:
         mod_name = MODULE_MAP[(query, api)]
-        query_mod = importlib.import_module(mod_name)
+        query_module = importlib.import_module(mod_name)
     except KeyError:
         raise Exception("Invalid combination of query and api.")
 
-    query_mod.run(FILE_FORMAT, USE_CACHE)
+    query_module.run(FILE_FORMAT, USE_CACHE)

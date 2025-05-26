@@ -2,7 +2,7 @@
 
 DEPS = (cd spark/src && rm -f deps.zip && zip -r deps.zip *)
 
-SUBMIT_QUERY = docker exec -it spark-master /opt/spark/bin/spark-submit \
+SUBMIT_QUERY = $(DEPS) && docker exec -it spark-master /opt/spark/bin/spark-submit \
 		--py-files /opt/spark/code/src/deps.zip /opt/spark/code/src/
 
 gen:
@@ -12,7 +12,7 @@ clean:
 	docker compose down -v
 	docker images | grep "sabd*" | awk '{print $3}' | xargs docker rmi
 
-cp_flow:
+flow:
 	docker cp nifi:/opt/nifi/nifi-current/conf/flow.json.gz nifi/flow.json.gz
 
 deps:
