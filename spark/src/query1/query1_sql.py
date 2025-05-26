@@ -1,15 +1,11 @@
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
-from config import *
-from utils import *
-import nifi_runner as nr
-# from deps.config import *
-# from deps. utils import *
-# from deps import nifi_runner as nr
+from deps. utils import *
+from deps import nifi_runner as nr
 
 import time
 
-if __name__ == "__main__":
+def run(FILE_FORMAT, _):
     spark = SparkSession.builder \
         .appName("Query 1 - SQL") \
         .config("spark.hadoop.fs.defaultFS", "hdfs://namenode:54310") \
@@ -52,9 +48,6 @@ if __name__ == "__main__":
         ORDER BY {COUNTRY}, {YEAR}
     """)
 
-    result.show()
-
+    #---------------------------------------------- Save results -----------------------------------------------#
     store_results_on_hdfs(result, FILE_FORMAT, result_file)
-
     spark.stop()
-    print("Results saved successfully.")

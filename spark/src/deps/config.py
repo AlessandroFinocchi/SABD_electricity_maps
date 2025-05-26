@@ -24,8 +24,6 @@ CARBON_FREE_PERC_AVG = "CFE_%_avg"
 CARBON_FREE_PERC_MAX = "CFE_%_max"
 
 
-USE_CACHE = False
-FILE_FORMAT = CSV
 DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 ORIGINAL_HEADER = [DATE,
           COUNTRY,

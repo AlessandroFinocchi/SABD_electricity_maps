@@ -1,4 +1,9 @@
-.PHONY: gen clean query nifi cp_flow
+.PHONY: gen clean cp_flow deps
+
+DEPS = (cd spark/src && rm -f deps.zip && zip -r deps.zip *)
+
+SUBMIT_QUERY = docker exec -it spark-master /opt/spark/bin/spark-submit \
+		--py-files /opt/spark/code/src/deps.zip /opt/spark/code/src/
 
 gen:
 	docker compose up -d
@@ -11,8 +16,22 @@ cp_flow:
 	docker cp nifi:/opt/nifi/nifi-current/conf/flow.json.gz nifi/flow.json.gz
 
 deps:
-	(cd spark/src/deps && rm -f deps.zip && zip -r deps.zip *)
+	$(DEPS)
 
-query1:
-	docker exec -it spark-master /opt/spark/bin/spark-submit \
-		--py-files /opt/spark/code/src/deps/deps.zip /opt/spark/code/src/query1/query1_sql.py
+query1_rdd_csv:
+	$(SUBMIT_QUERY)main.py --q 1 --api rdd --format csv
+
+query1_df_csv:
+	$(SUBMIT_QUERY)main.py --q 1 --api df --format csv
+
+query1_sql_csv:
+	$(SUBMIT_QUERY)main.py --q 1 --api sql --format csv
+
+query1_rdd_parquet:
+	$(SUBMIT_QUERY)main.py --q 1 --api rdd --format parquet
+
+query1_df_parquet:
+	$(SUBMIT_QUERY)main.py --q 1 --api df --format parquet
+
+query1_sql_parquet:
+	$(SUBMIT_QUERY)main.py --q 1 --api sql --format parquet
