@@ -14,4 +14,4 @@ curl -X PUT "https://$nifi_host:$nifi_port/nifi-api/flow/process-groups/$root_pg
   -H "content-type: application/json" \
   -H "Authorization: Bearer $jwt" \
   -d "{\"id\":\"$root_pg\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}"
-#  -d "{\"id\":\"$root_pg\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}"
+#  -d "{\"id\":\"$root_pg\",\"disconnectedNodeAcknowledged\":false,\"state\":\"STOPPED\"}"

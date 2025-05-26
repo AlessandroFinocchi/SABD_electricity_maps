@@ -10,10 +10,9 @@ clean:
 cp_flow:
 	docker cp nifi:/opt/nifi/nifi-current/conf/flow.json.gz nifi/flow.json.gz
 
-zip_deps:
-	zip -r ./spark/src/deps/deps.zip ./spark/src/deps -x "deps.zip"
+deps:
+	(cd spark/src/deps && rm -f deps.zip && zip -r deps.zip *)
 
 query1:
 	docker exec -it spark-master /opt/spark/bin/spark-submit \
-		--py-files /opt/spark/src/deps/deps.zip /opt/spark/src/query1/query1_rdd.py \
-
+		--py-files /opt/spark/code/src/deps/deps.zip /opt/spark/code/src/query1/query1_df.py

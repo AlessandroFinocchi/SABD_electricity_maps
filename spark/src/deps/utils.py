@@ -1,5 +1,5 @@
 from pyspark import SparkContext
-
+from config import *
 
 def year(rdd) -> int: return rdd.split(",")[0].split("-")[0]
 
@@ -23,3 +23,8 @@ def exists_on_hdfs(path_str:str, sc: SparkContext) -> bool:
     else:
         print(f"ERROR: Input file '{path_str}' not found in HDFS.")
         return False
+
+def store_results_on_hdfs(result, format:str, result_file:str):
+    if format == CSV: result.write.mode("overwrite").csv(result_file)
+    elif format == PARQUET: result.write.mode("overwrite").parquet(result_file)
+    else: raise Exception(f"Unsupported file format: {FILE_FORMAT}")

@@ -69,7 +69,3 @@ def stop_nifi_flow():
     jwt = get_jwt()
     root_pg = get_root_pg_id(jwt)
     set_pg_state(jwt, root_pg, State.STOPPED)
-
-if __name__ == '__main__':
-    run_nifi_flow()
-    # stop_nifi_flow()
