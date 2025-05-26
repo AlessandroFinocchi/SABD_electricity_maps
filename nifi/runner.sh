@@ -10,8 +10,27 @@ export jwt=$(curl -X POST https://$nifi_host:$nifi_port/nifi-api/access/token -k
 export root_pg=$(curl -X GET "https://$nifi_host:$nifi_port/nifi-api/process-groups/root" -k \
   -H "Authorization: Bearer $jwt" | jq -r ".id")
 
-curl -X PUT "https://$nifi_host:$nifi_port/nifi-api/flow/process-groups/$root_pg" -k \
-  -H "content-type: application/json" \
-  -H "Authorization: Bearer $jwt" \
-  -d "{\"id\":\"$root_pg\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}"
-#  -d "{\"id\":\"$root_pg\",\"disconnectedNodeAcknowledged\":false,\"state\":\"STOPPED\"}"
+#curl -X PUT "https://$nifi_host:$nifi_port/nifi-api/flow/process-groups/$root_pg" -k \
+#  -H "content-type: application/json" \
+#  -H "Authorization: Bearer $jwt" \
+#  -d "{\"id\":\"$root_pg\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}"
+##  -d "{\"id\":\"$root_pg\",\"disconnectedNodeAcknowledged\":false,\"state\":\"STOPPED\"}"
+
+export status=$(curl -X GET "https://$nifi_host:$nifi_port/nifi-api/flow/process-groups/$root_pg/status?recursive=true" -k\
+  -H "Content-type: application/json" \
+  -H "Authorization: Bearer $jwt" | jq '
+      .processGroupStatus
+      .aggregateSnapshot
+      .processGroupStatusSnapshots[0]
+      .processGroupStatusSnapshot
+      .processorStatusSnapshots
+      | map(select(.processorStatusSnapshot.runStatus=="Running"))
+      | length
+    '
+  )
+
+case "$status" in
+  13) echo "Running" ;;
+  0)  echo "Stopped" ;;
+  *)  echo "Error: unexpected processors running ($status)" ;;
+esac

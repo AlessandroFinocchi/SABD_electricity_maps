@@ -1,4 +1,4 @@
-.PHONY: gen clean cp_flow deps
+.PHONY: gen clean flow deps
 
 DEPS = (cd spark/src && rm -f deps.zip && zip -r deps.zip *)
 
@@ -19,7 +19,7 @@ deps:
 	$(DEPS)
 
 query1_rdd_csv:
-	$(SUBMIT_QUERY)main.py --q 1 --api rdd --format csv
+	$(SUBMIT_QUERY)main.py --q 4 --api rdd --format csv
 
 query1_df_csv:
 	$(SUBMIT_QUERY)main.py --q 1 --api df --format csv
