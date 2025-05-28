@@ -16,8 +16,8 @@ def run(FILE_FORMAT, _):
         time.sleep(1)
 
     #--------------------------------------------- Process results ---------------------------------------------#
-    it_df = get_df(spark, it_file, FILE_FORMAT).toDF(*ORIGINAL_HEADER)
-    se_df = get_df(spark, se_file, FILE_FORMAT).toDF(*ORIGINAL_HEADER)
+    it_df = get_df(spark, it_file, FILE_FORMAT)
+    se_df = get_df(spark, se_file, FILE_FORMAT)
 
     df = it_df.union(se_df).withColumn(
         YEAR,

@@ -11,7 +11,7 @@ def run(FILE_FORMAT, _):
     it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
     se_file = f"hdfs://namenode:54310/data/SE_all.{FILE_FORMAT}"
     result_file = f"hdfs://namenode:54310/data/results/query1_sql.{FILE_FORMAT}"
-    view_name = "electricity_map"
+    view_name = "view1"
     while not exists_on_hdfs(it_file, sc) or not exists_on_hdfs(se_file, sc):
         nr.run_nifi_flow()
         time.sleep(1)
@@ -31,12 +31,12 @@ def run(FILE_FORMAT, _):
         SELECT
           {COUNTRY}, 
           {YEAR},
-          ROUND(AVG(`{INTENSITY_DIRECT}`),2) AS `{INTENSITY_DIRECT_AVG}`,
-          MIN(`{INTENSITY_DIRECT}`)          AS `{INTENSITY_DIRECT_MIN}`,
-          MAX(`{INTENSITY_DIRECT}`)          AS `{INTENSITY_DIRECT_MAX}`,
-          ROUND(AVG(`{CARBON_FREE_PERC}`),2) AS `{CARBON_FREE_PERC_AVG}`,
-          MIN(`{CARBON_FREE_PERC}`)          AS `{CARBON_FREE_PERC_MIN}`,
-          MAX(`{CARBON_FREE_PERC}`)          AS `{CARBON_FREE_PERC_MAX}`
+          ROUND(AVG(`{INTENSITY_DIRECT}`), 6) AS `{INTENSITY_DIRECT_AVG}`,
+          ROUND(MIN(`{INTENSITY_DIRECT}`), 6) AS `{INTENSITY_DIRECT_MIN}`,
+          ROUND(MAX(`{INTENSITY_DIRECT}`), 6) AS `{INTENSITY_DIRECT_MAX}`,
+          ROUND(AVG(`{CARBON_FREE_PERC}`), 6) AS `{CARBON_FREE_PERC_AVG}`,
+          ROUND(MIN(`{CARBON_FREE_PERC}`), 6) AS `{CARBON_FREE_PERC_MIN}`,
+          ROUND(MAX(`{CARBON_FREE_PERC}`), 6) AS `{CARBON_FREE_PERC_MAX}`
         FROM {view_name}
         GROUP BY {COUNTRY}, {YEAR}
         ORDER BY {COUNTRY}, {YEAR}

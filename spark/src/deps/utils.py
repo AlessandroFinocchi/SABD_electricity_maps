@@ -30,9 +30,10 @@ def pretty_collect(rdd):
         print(result)
 
 def get_df(spark: SparkSession, filepath: str, file_format:str) -> DataFrame:
-    if file_format == CSV:       return spark.read.csv(filepath, header=False, inferSchema=True)
-    elif file_format == PARQUET: return spark.read.parquet(filepath)
+    if file_format == CSV:       df = spark.read.csv(filepath, header=False, inferSchema=True)
+    elif file_format == PARQUET: df = spark.read.parquet(filepath)
     else: raise Exception(f"Unsupported file format: {file_format}")
+    return df.toDF(*ORIGINAL_HEADER)
 
 def exists_on_hdfs(path_str:str, sc: SparkContext) -> bool:
     hadoop_conf = sc._jsc.hadoopConfiguration()

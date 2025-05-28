@@ -1,5 +1,7 @@
 CSV     = "csv"
 PARQUET = "parquet"
+DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+
 # Original headers
 DATE                 = "Datetime"
 COUNTRY              = "Country"
@@ -16,6 +18,7 @@ DATA_ESTIMATION_METH = "Data_estimation method"
 # New headers
 YEAR                 = "Year"
 MONTH                = "Month"
+YEAR_MONTH           = f"{YEAR}_{MONTH}"
 INTENSITY_DIRECT_MIN = "CO2_int_direct_min"
 INTENSITY_DIRECT_AVG = "CO2_int_direct_avg"
 INTENSITY_DIRECT_MAX = "CO2_int_direct_max"
@@ -23,8 +26,7 @@ CARBON_FREE_PERC_MIN = "CFE_%_min"
 CARBON_FREE_PERC_AVG = "CFE_%_avg"
 CARBON_FREE_PERC_MAX = "CFE_%_max"
 
-
-DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+# Headers
 ORIGINAL_HEADER = [DATE,
           COUNTRY,
           ZONE_NAME,
@@ -46,6 +48,6 @@ QUERY1_HEADER = [YEAR,
                  CARBON_FREE_PERC_MIN,
                  CARBON_FREE_PERC_MAX]
 
-QUERY2_HEADER = [f'{YEAR}_{MONTH}',
+QUERY2_HEADER = [YEAR_MONTH,
                  INTENSITY_DIRECT_AVG,
                  CARBON_FREE_PERC_AVG]
