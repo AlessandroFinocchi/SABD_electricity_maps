@@ -8,6 +8,7 @@ NIFI_PORT = "8443"
 CLIENT_ID = "b9112890-f366-44d4-a0d3-6ed7f4d53cec"
 PG_ID     = "6f8f46ad-5017-32f9-8d71-b68fca956eb3"
 BASE_URL  = f"https://{NIFI_HOST}:{NIFI_PORT}"
+PG_LEN    = 13
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -77,13 +78,9 @@ def is_nifi_running(jwt: str, root_pg: str) -> bool:
         if s.get("processorStatusSnapshot", s).get("runStatus") == "Running"
     )
 
-    match running_count:
-        case 0:
-            return False
-        case 13:
-            return True
-        case _:
-            raise Exception(f"Unexpected number of running processors: {running_count}")
+    if running_count == 0:        return False
+    elif running_count == PG_LEN: return True
+    else: raise Exception(f"Unexpected number of running processors: {running_count}")
 
 def set_pg_state(jwt:str, root_pg:str, state:State) -> None:
     put_url = f"{BASE_URL}/nifi-api/flow/process-groups/{root_pg}"

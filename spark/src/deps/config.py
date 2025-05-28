@@ -45,3 +45,7 @@ QUERY1_HEADER = [YEAR,
                  CARBON_FREE_PERC_AVG,
                  CARBON_FREE_PERC_MIN,
                  CARBON_FREE_PERC_MAX]
+
+QUERY2_HEADER = [f'{YEAR}_{MONTH}',
+                 INTENSITY_DIRECT_AVG,
+                 CARBON_FREE_PERC_AVG]

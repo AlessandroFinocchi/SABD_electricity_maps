@@ -1,4 +1,3 @@
-from pyspark.sql import SparkSession
 from deps.utils import *
 from deps import nifi_runner as nr
 
@@ -6,12 +5,7 @@ import time
 
 
 def run(FILE_FORMAT, USE_CACHE):
-    spark = SparkSession.builder \
-        .appName("Query 1 - RDD") \
-        .config("spark.hadoop.fs.defaultFS", "hdfs://namenode:54310") \
-        .getOrCreate()
-    sc = spark.sparkContext
-    sc.setLogLevel('WARN')
+    spark, sc = get_spark("Query 1 - RDD")
 
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
@@ -29,13 +23,6 @@ def run(FILE_FORMAT, USE_CACHE):
     rdd_map = rdd.map(lambda x: ((country(x), year(x)), (intensity1(x), free_intensity(x), 1)))
     rdd_map = rdd_map.cache() if USE_CACHE else rdd_map
 
-    rdd_extremes = rdd_map.reduceByKey(lambda x, y: (
-        min(x[0], y[0]),
-        min(x[1], y[1]),
-        max(x[0], y[0]),
-        max(x[1], y[1])
-    )).sortByKey()
-
     rdd_min = rdd_map.reduceByKey(lambda x, y: (min(x[0], y[0]), min(x[1], y[1])))
     rdd_max = rdd_map.reduceByKey(lambda x, y: (max(x[0], y[0]), max(x[1], y[1])))
     rdd_avg = rdd_map.reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1], x[2] + y[2])) \
@@ -47,9 +34,9 @@ def run(FILE_FORMAT, USE_CACHE):
                          .map(lambda x:(
                                         x[0][0],        # country
                                         x[0][1],        # year
-                                        x[1][0][1][0],  # avg carbon
-                                        x[1][0][0][0],  # min carbon
-                                        x[1][1][0],     # max carbon
+                                        x[1][0][1][0],  # avg intensity
+                                        x[1][0][0][0],  # min intensity
+                                        x[1][1][0],     # max intensity
                                         x[1][0][1][1],  # avg cfe
                                         x[1][0][0][1],  # min cfe
                                         x[1][1][1]      # max cfe

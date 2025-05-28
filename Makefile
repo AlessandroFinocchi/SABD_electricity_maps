@@ -1,4 +1,4 @@
-.PHONY: gen clean flow deps
+.PHONY: gen clean flow deps query
 
 DEPS = (cd spark/src && rm -f deps.zip && zip -r deps.zip *)
 
@@ -18,20 +18,12 @@ flow:
 deps:
 	$(DEPS)
 
-query1_rdd_csv:
-	$(SUBMIT_QUERY)main.py --q 4 --api rdd --format csv
-
-query1_df_csv:
-	$(SUBMIT_QUERY)main.py --q 1 --api df --format csv
-
-query1_sql_csv:
-	$(SUBMIT_QUERY)main.py --q 1 --api sql --format csv
-
-query1_rdd_parquet:
-	$(SUBMIT_QUERY)main.py --q 1 --api rdd --format parquet
-
-query1_df_parquet:
-	$(SUBMIT_QUERY)main.py --q 1 --api df --format parquet
-
-query1_sql_parquet:
-	$(SUBMIT_QUERY)main.py --q 1 --api sql --format parquet
+query:
+	@if [ $(words $(MAKECMDGOALS)) -ne 4 ]; then \
+	  echo "Usage: make query <num> <api> <format>"; \
+	  exit 1; \
+	fi; \
+	Q=$(word 2,$(MAKECMDGOALS)); \
+	API=$(word 3,$(MAKECMDGOALS)); \
+	FMT=$(word 4,$(MAKECMDGOALS)); \
+	$(SUBMIT_QUERY)main.py --q $$Q --api $$API --format $$FMT

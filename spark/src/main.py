@@ -15,14 +15,8 @@ if __name__ =="__main__":
     FILE_FORMAT = args.format
     USE_CACHE   = args.use_cache
 
-    MODULE_MAP = {
-        (1, "rdd"): "query1.query1_rdd",
-        (1, "df"):  "query1.query1_df",
-        (1, "sql"): "query1.query1_sql",
-    }
     try:
-        mod_name = MODULE_MAP[(query, api)]
-        query_module = importlib.import_module(mod_name)
+        query_module = importlib.import_module(f'query{query}.query{query}_{api}')
     except KeyError:
         raise Exception("Invalid combination of query and api.")
 

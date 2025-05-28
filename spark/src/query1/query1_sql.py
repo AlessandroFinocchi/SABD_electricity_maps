@@ -1,17 +1,11 @@
-from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
-from deps. utils import *
+from deps.utils import *
 from deps import nifi_runner as nr
 
 import time
 
 def run(FILE_FORMAT, _):
-    spark = SparkSession.builder \
-        .appName("Query 1 - SQL") \
-        .config("spark.hadoop.fs.defaultFS", "hdfs://namenode:54310") \
-        .getOrCreate()
-    sc = spark.sparkContext
-    sc.setLogLevel('WARN')
+    spark, sc = get_spark("Query 1 - SQL")
 
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"

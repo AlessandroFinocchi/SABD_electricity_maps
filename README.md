@@ -16,7 +16,7 @@
 - api $\in \{ \texttt{rdd}, \texttt{df}, \texttt{sql} \}$
 - format $\in \{ \texttt{csv}, \texttt{parquet} \}$
 ```
-    make query<num>_<api>_<format>
+    make query <num> <api> <format>
 ```
 
 4. Eventually compose down docker services

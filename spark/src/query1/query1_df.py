@@ -1,17 +1,11 @@
-from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
-from deps. utils import *
+from deps.utils import *
 from deps import nifi_runner as nr
 
 import time
 
 def run(FILE_FORMAT, _):
-    spark = SparkSession.builder \
-        .appName("Query 1 - DF") \
-        .config("spark.hadoop.fs.defaultFS", "hdfs://namenode:54310") \
-        .getOrCreate()
-    sc = spark.sparkContext
-    sc.setLogLevel('WARN')
+    spark, sc = get_spark("Query 1 - DF")
 
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
@@ -22,8 +16,8 @@ def run(FILE_FORMAT, _):
         time.sleep(1)
 
     #--------------------------------------------- Process results ---------------------------------------------#
-    it_df = spark.read.csv(it_file, header=False, inferSchema=True).toDF(*ORIGINAL_HEADER)
-    se_df = spark.read.csv(se_file, header=False, inferSchema=True).toDF(*ORIGINAL_HEADER)
+    it_df = get_df(spark, it_file, FILE_FORMAT).toDF(*ORIGINAL_HEADER)
+    se_df = get_df(spark, se_file, FILE_FORMAT).toDF(*ORIGINAL_HEADER)
 
     df = it_df.union(se_df).withColumn(
         YEAR,
