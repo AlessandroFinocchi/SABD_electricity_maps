@@ -1,8 +1,8 @@
 from pyspark.sql import functions as F
 from pyspark.sql.functions import col
-
+from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
 from deps.utils import *
-from deps import nifi_runner as nr
+from deps import nifi_utils as nr
 
 import time
 
@@ -41,7 +41,7 @@ def run(FILE_FORMAT, USE_CACHE):
                  .union(df_avg_cfe_asc)
 
     #---------------------------------------------- Save results -----------------------------------------------#
-    store_results_on_hdfs(df_classification, FILE_FORMAT, result_file1)
-    store_results_on_hdfs(df_progress,       FILE_FORMAT, result_file2)
+    write_results_on_hdfs(df_classification, FILE_FORMAT, result_file1)
+    write_results_on_hdfs(df_progress, FILE_FORMAT, result_file2)
 
     spark.stop()

@@ -1,5 +1,6 @@
 from deps.utils import *
-from deps import nifi_runner as nr
+from deps import nifi_utils as nr
+from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
 
 import time
 
@@ -41,7 +42,7 @@ def run(FILE_FORMAT, USE_CACHE):
     #---------------------------------------------- Save results -----------------------------------------------#
     df_res1 = rdd_classification.toDF(QUERY2_HEADER)
     df_res2 = rdd_progress.toDF(QUERY2_HEADER)
-    store_results_on_hdfs(df_res1, FILE_FORMAT, result_file1)
-    store_results_on_hdfs(df_res2, FILE_FORMAT, result_file2)
+    write_results_on_hdfs(df_res1, FILE_FORMAT, result_file1)
+    write_results_on_hdfs(df_res2, FILE_FORMAT, result_file2)
 
     spark.stop()

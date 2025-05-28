@@ -51,3 +51,9 @@ QUERY1_HEADER = [YEAR,
 QUERY2_HEADER = [YEAR_MONTH,
                  INTENSITY_DIRECT_AVG,
                  CARBON_FREE_PERC_AVG]
+
+# Influx
+INFLUXDB_URL="http://influxdb2:8086"
+INFLUXDB_TOKEN="my-token"
+INFLUXDB_ORG="it.uniroma2"
+INFLUXDB_BUCKET="query_results"
