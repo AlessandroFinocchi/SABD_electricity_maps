@@ -1,11 +1,13 @@
 from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
+from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 from deps import nifi_utils as nr
+from time import time
 
 import time
 
 
-def run(FILE_FORMAT, USE_CACHE):
+def run(FILE_FORMAT, USE_CACHE, TIMED) -> float:
     spark, sc = get_spark("Query 1 - RDD")
 
     #----------------------------------------------- Check hdfs ------------------------------------------------#
@@ -17,6 +19,8 @@ def run(FILE_FORMAT, USE_CACHE):
         time.sleep(1)
 
     #--------------------------------------------- Process results ---------------------------------------------#
+    start_time = time()
+
     it_rdd = sc.textFile(it_file)
     se_rdd = sc.textFile(se_file)
 
@@ -33,8 +37,8 @@ def run(FILE_FORMAT, USE_CACHE):
                          .join(rdd_max) \
                          .sortByKey() \
                          .map(lambda x:(
-                                        x[0][0],        # country
                                         x[0][1],        # year
+                                        x[0][0],        # country
                                         x[1][0][1][0],  # avg intensity
                                         x[1][0][0][0],  # min intensity
                                         x[1][1][0],     # max intensity
@@ -44,8 +48,13 @@ def run(FILE_FORMAT, USE_CACHE):
                                         )
                               )
 
+    if TIMED: rdd_results.collect()
+    end_time = time()
+
     #---------------------------------------------- Save results -----------------------------------------------#
     df_res = rdd_results.toDF(QUERY1_HEADER)
     write_results_on_hdfs(df_res, FILE_FORMAT, result_file)
-
+    write_results_on_influxdb(df_res, "query1_rdd", QUERY1_CONFIG)
     spark.stop()
+
+    return end_time - start_time

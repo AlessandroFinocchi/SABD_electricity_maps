@@ -1,9 +1,9 @@
 import argparse
 import importlib
 
-
-if __name__ =="__main__":
+if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("--times",  type=int, default=100,                  required=False)
     arg_parser.add_argument("--q",      type=int, choices=[1, 2, 3],            required=True)
     arg_parser.add_argument("--api",    type=str, choices=["rdd", "df", "sql"], required=True)
     arg_parser.add_argument("--format", type=str, choices=["csv", "parquet"],   required=True)
@@ -13,6 +13,7 @@ if __name__ =="__main__":
 
     query:int   = args.q
     api:str     = args.api
+    times:int   = args.times
     FILE_FORMAT = args.format
     USE_CACHE   = args.use_cache
     TIMED       = args.time
@@ -24,4 +25,5 @@ if __name__ =="__main__":
     except KeyError:
         raise Exception("Invalid combination of query and api.")
 
-    _ = query_module.run(FILE_FORMAT, USE_CACHE, TIMED)
+    for i in range(times):
+        time = query_module.run(FILE_FORMAT, USE_CACHE, TIMED)

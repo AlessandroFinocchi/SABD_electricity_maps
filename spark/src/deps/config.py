@@ -1,6 +1,8 @@
 CSV     = "csv"
 PARQUET = "parquet"
-DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+ORIGINAL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+QUERY1_DATE_FORMAT   = "%Y"
+QUERY2_DATE_FORMAT   = "%Y_%m"
 
 # Original headers
 DATE                 = "Datetime"
@@ -52,8 +54,43 @@ QUERY2_HEADER = [YEAR_MONTH,
                  INTENSITY_DIRECT_AVG,
                  CARBON_FREE_PERC_AVG]
 
-# Influx
+# Influx reference constants
 INFLUXDB_URL="http://influxdb2:8086"
-INFLUXDB_TOKEN="my-token"
+INFLUXDB_TOKEN="iFLYSTheSTRi"
 INFLUXDB_ORG="it.uniroma2"
 INFLUXDB_BUCKET="query_results"
+
+class InfluxWriterConfig:
+    def __init__(self, header,
+                 time_format: str,
+                 timestamp_col: int,
+                 tag_cols,
+                 field_cols):
+        """
+        :param header:
+        :type header: list[str]
+        :param time_format:
+        :param timestamp_col:
+        :param tag_cols:
+        :type tag_cols: list[int]
+        :param field_cols:
+        :type field_cols: list[int]
+        """
+        self.header = header
+        self.time_format = time_format
+        self.timestamp_col = timestamp_col
+        self.tag_cols = tag_cols
+        self.field_cols = field_cols
+
+QUERY1_CONFIG = InfluxWriterConfig(header=QUERY1_HEADER,
+                                   time_format=QUERY1_DATE_FORMAT,
+                                   timestamp_col=0,
+                                   tag_cols=[1],
+                                   field_cols=[2, 3, 4, 5, 6, 7])
+
+QUERY2_CONFIG = InfluxWriterConfig(header=QUERY2_HEADER,
+                                   time_format=QUERY2_DATE_FORMAT,
+                                   timestamp_col=0,
+                                   tag_cols=[],
+                                   field_cols=[1, 2]
+)

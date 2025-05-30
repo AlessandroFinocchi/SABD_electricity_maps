@@ -1,11 +1,13 @@
 from pyspark.sql import functions as F
 from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
+from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 from deps import nifi_utils as nr
+from time import time
 
 import time
 
-def run(FILE_FORMAT, _):
+def run(FILE_FORMAT, _, TIMED) -> float:
     spark, sc = get_spark("Query 1 - DF")
 
     #----------------------------------------------- Check hdfs ------------------------------------------------#
@@ -17,23 +19,31 @@ def run(FILE_FORMAT, _):
         time.sleep(1)
 
     #--------------------------------------------- Process results ---------------------------------------------#
+    start_time = time()
+
     it_df = get_df(spark, it_file, FILE_FORMAT)
     se_df = get_df(spark, se_file, FILE_FORMAT)
 
     df = it_df.union(se_df).withColumn(
         YEAR,
-        F.year(F.to_timestamp(DATE, DATE_FORMAT))
+        F.year(F.to_timestamp(DATE, ORIGINAL_DATE_FORMAT))
     )
 
-    result = df.groupby(COUNTRY, YEAR) \
-               .agg(F.min(INTENSITY_DIRECT).alias(INTENSITY_DIRECT_MIN),
-                    F.avg(INTENSITY_DIRECT).alias(INTENSITY_DIRECT_AVG),
+    result = df.groupby(YEAR, COUNTRY) \
+               .agg(F.avg(INTENSITY_DIRECT).alias(INTENSITY_DIRECT_AVG),
+                    F.min(INTENSITY_DIRECT).alias(INTENSITY_DIRECT_MIN),
                     F.max(INTENSITY_DIRECT).alias(INTENSITY_DIRECT_MAX),
-                    F.min(CARBON_FREE_PERC).alias(CARBON_FREE_PERC_MIN),
                     F.avg(CARBON_FREE_PERC).alias(CARBON_FREE_PERC_AVG),
+                    F.min(CARBON_FREE_PERC).alias(CARBON_FREE_PERC_MIN),
                     F.max(CARBON_FREE_PERC).alias(CARBON_FREE_PERC_MAX)) \
                .orderBy(COUNTRY, YEAR)
 
+    if TIMED: result.collect()
+    end_time = time()
+
     #---------------------------------------------- Save results -----------------------------------------------#
     write_results_on_hdfs(result, FILE_FORMAT, result_file)
+    write_results_on_influxdb(result, "query1_df", QUERY1_CONFIG)
     spark.stop()
+
+    return end_time - start_time

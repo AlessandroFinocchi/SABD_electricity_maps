@@ -1,22 +1,4 @@
 services:
-  nifi:
-    container_name: nifi
-    hostname: nifi
-    build:
-      context: ./nifi   # relative path to the Nifi Dockerfile
-      dockerfile: Dockerfile
-    networks: # networks to connect
-      hadoop_network: # the name of the network
-        ipv4_address: 10.0.0.9 # static ip of the container
-    ports:
-      - '8443:8443'
-    environment:
-      NIFI_WEB_HTTP_PORT: '8443'
-      SINGLE_USER_CREDENTIALS_USERNAME: 'admin'
-      SINGLE_USER_CREDENTIALS_PASSWORD: 'ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB'
-      NIFI_HOME: '/opt/nifi/nifi-current'
-      NIFI_SENSITIVE_PROPS_KEY: 'my-key123456'
-
   namenode:
     container_name: namenode
     build: # build the image
@@ -100,25 +82,51 @@ services:
       hadoop_network: # the name of the network
         ipv4_address: 10.0.0.21 # static ip of the container
 
+  nifi:
+    container_name: nifi
+    hostname: nifi
+    build:
+      context: ./nifi   # relative path to the Nifi Dockerfile
+      dockerfile: Dockerfile
+    networks: # networks to connect
+      hadoop_network: # the name of the network
+        ipv4_address: 10.0.0.9 # static ip of the container
+    ports:
+      - '8443:8443'
+    depends_on:
+      - namenode
+    environment:
+      NIFI_WEB_HTTP_PORT: '8443'
+      SINGLE_USER_CREDENTIALS_USERNAME: 'admin'
+      SINGLE_USER_CREDENTIALS_PASSWORD: 'ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB'
+      NIFI_HOME: '/opt/nifi/nifi-current'
+      NIFI_SENSITIVE_PROPS_KEY: 'my-key123456'
+
   influxdb2:
     image: influxdb:2
+    container_name: influxdb2
+    hostname: influxdb2
     ports:
-      - 8086:8086
+      - "8086:8086"
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME_FILE: /run/secrets/influxdb2-admin-username
       DOCKER_INFLUXDB_INIT_PASSWORD_FILE: /run/secrets/influxdb2-admin-password
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN_FILE: /run/secrets/influxdb2-admin-token
-      DOCKER_INFLUXDB_INIT_ORG: docs
-      DOCKER_INFLUXDB_INIT_BUCKET: home
+      DOCKER_INFLUXDB_INIT_ORG: it.uniroma2
+      DOCKER_INFLUXDB_INIT_BUCKET: query_results
     secrets:
       - influxdb2-admin-username
       - influxdb2-admin-password
       - influxdb2-admin-token
+    networks: # networks to connect
+      hadoop_network: # the name of the network
+        ipv4_address: 10.0.0.8 # static ip of the container
 
   grafana:
     image: grafana/grafana-enterprise
     container_name: grafana
+    hostname: grafana
     restart: unless-stopped
     environment:
      - GF_SERVER_ROOT_URL=http://my.grafana.server/
@@ -127,7 +135,7 @@ services:
       - '3000:3000'
     networks:
       hadoop_network: # the name of the network
-        ipv4_address: 10.0.0.8 # static ip of the container
+        ipv4_address: 10.0.0.7 # static ip of the container
 
 secrets:
   influxdb2-admin-username:

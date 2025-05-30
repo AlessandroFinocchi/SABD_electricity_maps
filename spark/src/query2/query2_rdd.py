@@ -1,11 +1,13 @@
+from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 from deps import nifi_utils as nr
 from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
+from time import time
 
 import time
 
 
-def run(FILE_FORMAT, USE_CACHE):
+def run(FILE_FORMAT, USE_CACHE, TIMED) -> float:
     spark, sc = get_spark("Query 2 - RDD")
 
     #----------------------------------------------- Check hdfs ------------------------------------------------#
@@ -18,6 +20,8 @@ def run(FILE_FORMAT, USE_CACHE):
         time.sleep(1)
 
     #--------------------------------------------- Process results ---------------------------------------------#
+    start_time = time()
+
     rdd = sc.textFile(it_file)
 
     rdd_avg = rdd.map(lambda x: (f'{year(x)}_{month(x)}', (intensity1(x), free_intensity(x), 1))) \
@@ -39,10 +43,18 @@ def run(FILE_FORMAT, USE_CACHE):
     rdd_progress = rdd_avg.map(lambda x:(x[0], x[1][0], x[1][1])) \
                           .sortBy(lambda x: x[0]) # -> (date, avg_intensity, avg_cfe)
 
-    #---------------------------------------------- Save results -----------------------------------------------#
-    df_res1 = rdd_classification.toDF(QUERY2_HEADER)
-    df_res2 = rdd_progress.toDF(QUERY2_HEADER)
-    write_results_on_hdfs(df_res1, FILE_FORMAT, result_file1)
-    write_results_on_hdfs(df_res2, FILE_FORMAT, result_file2)
+    if TIMED:
+        rdd_classification.collect()
+        rdd_progress.collect()
+    end_time = time()
 
+    #---------------------------------------------- Save results -----------------------------------------------#
+    df_res_classification = rdd_classification.toDF(QUERY2_HEADER)
+    df_res_progress       = rdd_progress.toDF(QUERY2_HEADER)
+
+    write_results_on_hdfs(df_res_classification, FILE_FORMAT, result_file1)
+    write_results_on_hdfs(df_res_progress, FILE_FORMAT, result_file2)
+    write_results_on_influxdb(df_res_progress, "query2_rdd", QUERY2_CONFIG)
     spark.stop()
+
+    return end_time - start_time
