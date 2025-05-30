@@ -19,11 +19,21 @@ deps:
 	$(DEPS)
 
 query:
-	@if [ $(words $(MAKECMDGOALS)) -ne 4 ]; then \
+	@if [ $(words $(MAKECMDGOALS)) -ne 4 ]; then     \
 	  echo "Usage: make query <num> <api> <format>"; \
 	  exit 1; \
 	fi; \
-	Q=$(word 2,$(MAKECMDGOALS)); \
+	Q  =$(word 2,$(MAKECMDGOALS)); \
 	API=$(word 3,$(MAKECMDGOALS)); \
 	FMT=$(word 4,$(MAKECMDGOALS)); \
 	$(SUBMIT_QUERY)main.py --q $$Q --api $$API --format $$FMT
+
+perf:
+	@if [ $(words $(MAKECMDGOALS)) -ne 4 ]; then    \
+	  echo "Usage: make perf <num> <api> <format>"; \
+	  exit 1; \
+	fi; \
+	Q  =$(word 2,$(MAKECMDGOALS)); \
+	API=$(word 3,$(MAKECMDGOALS)); \
+	FMT=$(word 4,$(MAKECMDGOALS)); \
+	$(SUBMIT_QUERY)benchmark_runner.py --q $$Q --api $$API --format $$FMT

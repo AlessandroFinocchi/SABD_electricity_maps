@@ -1,14 +1,15 @@
 import argparse
 import importlib
 
+from deps.influxdb_utils import write_job_time_on_influxdb, get_write_api
+
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--times",  type=int, default=100,                  required=False)
     arg_parser.add_argument("--q",      type=int, choices=[1, 2, 3],            required=True)
     arg_parser.add_argument("--api",    type=str, choices=["rdd", "df", "sql"], required=True)
     arg_parser.add_argument("--format", type=str, choices=["csv", "parquet"],   required=True)
+    arg_parser.add_argument("--times",  type=int, default=100,                  required=False)
     arg_parser.add_argument("--cache", dest="use_cache", action="store_true", default=False)
-    arg_parser.add_argument("--timed", dest="time",      action="store_true", default=False)
     args = arg_parser.parse_args()
 
     query:int   = args.q
@@ -25,5 +26,13 @@ if __name__ == "__main__":
     except KeyError:
         raise Exception("Invalid combination of query and api.")
 
-    for i in range(times):
-        time = query_module.run(FILE_FORMAT, USE_CACHE, TIMED)
+    client, write_api = get_write_api()
+    for i in range(1, times+1):
+        time: float = query_module.run(FILE_FORMAT, USE_CACHE, TIMED=True)
+        write_job_time_on_influxdb(write_api=write_api,
+                                   measurement=f"perf_query{query}_{api}_{FILE_FORMAT}",
+                                   job_time=time,
+                                   run_num=i,
+                                   use_cache = USE_CACHE)
+
+    client.close()

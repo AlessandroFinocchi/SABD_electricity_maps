@@ -24,4 +24,4 @@ if __name__ =="__main__":
     except KeyError:
         raise Exception("Invalid combination of query and api.")
 
-    _ = query_module.run(FILE_FORMAT, USE_CACHE, TIMED)
+    _ = query_module.run(FILE_FORMAT, USE_CACHE, TIMED=False)
