@@ -6,8 +6,7 @@ from deps import nifi_utils as nr
 
 import time
 
-def run(FILE_FORMAT, _, TIMED) -> float:
-    spark, sc = get_spark("Query 1 - DF")
+def run(spark: SparkSession, sc:SparkContext, FILE_FORMAT, _, TIMED) -> float:
 
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
@@ -41,8 +40,8 @@ def run(FILE_FORMAT, _, TIMED) -> float:
     end_time = time.time()
 
     #---------------------------------------------- Save results -----------------------------------------------#
-    write_results_on_hdfs(result, FILE_FORMAT, result_file)
-    write_results_on_influxdb(result, "query1_df", QUERY1_CONFIG)
-    spark.stop()
+    if not TIMED:
+        write_results_on_hdfs(result, FILE_FORMAT, result_file)
+        write_results_on_influxdb(result, "query1_df", QUERY1_CONFIG)
 
     return end_time - start_time

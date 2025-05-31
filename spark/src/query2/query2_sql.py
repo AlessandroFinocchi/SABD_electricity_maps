@@ -7,8 +7,7 @@ from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
 import time
 
 
-def run(FILE_FORMAT, _, TIMED) -> float:
-    spark, sc = get_spark("Query 2 - SQL")
+def run(spark: SparkSession, sc:SparkContext, FILE_FORMAT, _, TIMED) -> float:
 
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
@@ -73,9 +72,9 @@ def run(FILE_FORMAT, _, TIMED) -> float:
     end_time = time.time()
 
     #---------------------------------------------- Save results -----------------------------------------------#
-    write_results_on_hdfs(df_classification, FILE_FORMAT, result_file1)
-    write_results_on_hdfs(df_progress, FILE_FORMAT, result_file2)
-    write_results_on_influxdb(df_progress, "query2_sql", QUERY2_CONFIG)
-    spark.stop()
+    if not TIMED:
+        write_results_on_hdfs(df_classification, FILE_FORMAT, result_file1)
+        write_results_on_hdfs(df_progress, FILE_FORMAT, result_file2)
+        write_results_on_influxdb(df_progress, "query2_sql", QUERY2_CONFIG)
 
     return end_time - start_time

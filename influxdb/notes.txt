@@ -1,0 +1,22 @@
+------------------------------------------------------- CONFIG -------------------------------------------------------
+| URL:    http://influxdb2:8086                                                                                      |
+| ORG:    it.uniroma2                                                                                                |
+| TOK:    iFLYSTheSTRi                                                                                               |
+| BUCKET: query_results                                                                                              |
+----------------------------------------------------------------------------------------------------------------------
+
+---------------------------------------------------- QUERY 1 RES -----------------------------------------------------
+from(bucket: "query_results")
+  |> range(start: 2000-01-01T00:00:00Z, stop: 2030-01-01T06:00:00Z)
+  |> filter(fn: (r) => r["_measurement"] == "query1_rdd")
+  |> filter(fn: (r) => r["Country"] == "Italy" or r["Country"] == "Sweden")
+  |> filter(fn: (r) => r["_field"] == "CFE_%_avg" or r["_field"] == "CFE_%_min" or r["_field"] == "CFE_%_max")
+  |> filter(fn: (r) => r["_field"] == "CO2_int_avg" or r["_field"] == "CO2_int_min" or r["_field"] == "CO2_int_max")
+  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
+  |> yield(name: "mean")
+
+---------------------------------------------------- QUERY PERF -----------------------------------------------------
+from(bucket: "query_results")
+  |> range(start: 2000-01-01T00:00:00Z, stop: 2030-01-01T06:00:00Z)
+  |> filter(fn: (r) => r["_measurement"] == "perf_query1_rdd_csv")
+  |> filter(fn: (r) => r["_field"] == "job_time")

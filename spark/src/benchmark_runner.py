@@ -2,13 +2,14 @@ import argparse
 import importlib
 
 from deps.influxdb_utils import write_job_time_on_influxdb, get_write_api
+from deps.utils import get_spark
 
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("--q",      type=int, choices=[1, 2, 3],            required=True)
     arg_parser.add_argument("--api",    type=str, choices=["rdd", "df", "sql"], required=True)
     arg_parser.add_argument("--format", type=str, choices=["csv", "parquet"],   required=True)
-    arg_parser.add_argument("--times",  type=int, default=5,                  required=False)
+    arg_parser.add_argument("--times",  type=int, default=50,                  required=False)
     arg_parser.add_argument("--cache", dest="use_cache", action="store_true", default=False)
     args = arg_parser.parse_args()
 
@@ -20,6 +21,8 @@ if __name__ == "__main__":
 
     if USE_CACHE and api != "rdd": raise Exception("Cache is not supported for query 1 or 2 with DF or SQL API.")
 
+    spark, sc = get_spark(f"Query {query} - {api}")
+
     try:
         query_module = importlib.import_module(f'query{query}.query{query}_{api}')
     except KeyError:
@@ -28,7 +31,7 @@ if __name__ == "__main__":
     client, write_api = get_write_api()
     time_sum = 0
     for i in range(1, times+1):
-        time: float = query_module.run(FILE_FORMAT, USE_CACHE, TIMED=True)
+        time: float = query_module.run(spark, sc, FILE_FORMAT, USE_CACHE, TIMED=True)
         time_sum += time
         remaining_seconds = time_sum / (i+1) * (times-i)
         secs  = remaining_seconds % 60
@@ -43,3 +46,4 @@ if __name__ == "__main__":
                                    use_cache = USE_CACHE)
 
     client.close()
+    spark.stop()

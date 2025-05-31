@@ -6,8 +6,7 @@ from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
 import time
 
 
-def run(FILE_FORMAT, USE_CACHE, TIMED) -> float:
-    spark, sc = get_spark("Query 2 - RDD")
+def run(_: SparkSession, sc:SparkContext, FILE_FORMAT, USE_CACHE, TIMED) -> float:
 
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
@@ -48,12 +47,12 @@ def run(FILE_FORMAT, USE_CACHE, TIMED) -> float:
     end_time = time.time()
 
     #---------------------------------------------- Save results -----------------------------------------------#
-    df_res_classification = rdd_classification.toDF(QUERY2_HEADER)
-    df_res_progress       = rdd_progress.toDF(QUERY2_HEADER)
+    if not TIMED:
+        df_res_classification = rdd_classification.toDF(QUERY2_HEADER)
+        df_res_progress       = rdd_progress.toDF(QUERY2_HEADER)
 
-    write_results_on_hdfs(df_res_classification, FILE_FORMAT, result_file1)
-    write_results_on_hdfs(df_res_progress, FILE_FORMAT, result_file2)
-    write_results_on_influxdb(df_res_progress, "query2_rdd", QUERY2_CONFIG)
-    spark.stop()
+        write_results_on_hdfs(df_res_classification, FILE_FORMAT, result_file1)
+        write_results_on_hdfs(df_res_progress, FILE_FORMAT, result_file2)
+        write_results_on_influxdb(df_res_progress, "query2_rdd", QUERY2_CONFIG)
 
     return end_time - start_time

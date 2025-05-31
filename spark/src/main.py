@@ -1,6 +1,7 @@
 import argparse
 import importlib
 
+from deps.utils import get_spark
 
 if __name__ =="__main__":
     arg_parser = argparse.ArgumentParser()
@@ -17,9 +18,13 @@ if __name__ =="__main__":
 
     if USE_CACHE and api != "rdd": raise Exception("Cache is not supported for query 1 or 2 with DF or SQL API.")
 
+    spark, sc = get_spark(f"Query {query} - {api}")
+
     try:
         query_module = importlib.import_module(f'query{query}.query{query}_{api}')
     except KeyError:
         raise Exception("Invalid combination of query and api.")
 
-    _ = query_module.run(FILE_FORMAT, USE_CACHE, TIMED=False)
+    _ = query_module.run(spark, sc, FILE_FORMAT, USE_CACHE, TIMED=False)
+
+    spark.stop()
