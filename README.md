@@ -1,7 +1,7 @@
 # SABD project: electricity maps analysis
 
 ## Usage
-1. First compile spark job dependencies using the command
+1. First, compile spark job dependencies using the command
 ```sh
     make deps
 ```
@@ -12,11 +12,18 @@
 ```
 
 3. Run queries with parameters where
-- num $\in \{1,2,3\}$
+- num $ \in \{1,2,3\} $
 - api $\in \{ \texttt{rdd}, \texttt{df}, \texttt{sql} \}$
 - format $\in \{ \texttt{csv}, \texttt{parquet} \}$
 ```
     make query <num> <api> <format>
+```
+4. Get performance metrics on InfluxDB
+- num $ \in \{1,2,3\} $
+- api $\in \{ \texttt{rdd}, \texttt{df}, \texttt{sql} \}$
+- format $\in \{ \texttt{csv}, \texttt{parquet} \}$
+```
+    make perf <num> <api> <format>
 ```
 
 4. Eventually compose down docker services

@@ -3,7 +3,6 @@ from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
 from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 from deps import nifi_utils as nr
-from time import time
 
 import time
 
@@ -20,7 +19,7 @@ def run(FILE_FORMAT, _, TIMED) -> float:
         time.sleep(1)
 
     #--------------------------------------------- Process results ---------------------------------------------#
-    start_time = time()
+    start_time = time.time()
 
     it_df = spark.read.csv(it_file, header=False, inferSchema=True).toDF(*ORIGINAL_HEADER)
     se_df = spark.read.csv(se_file, header=False, inferSchema=True).toDF(*ORIGINAL_HEADER)
@@ -48,7 +47,7 @@ def run(FILE_FORMAT, _, TIMED) -> float:
     """)
 
     if TIMED: result.collect()
-    end_time = time()
+    end_time = time.time()
 
     #---------------------------------------------- Save results -----------------------------------------------#
     write_results_on_hdfs(result, FILE_FORMAT, result_file)

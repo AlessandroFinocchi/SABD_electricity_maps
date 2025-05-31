@@ -4,7 +4,6 @@ from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
 from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 from deps import nifi_utils as nr
-from time import time
 
 import time
 
@@ -22,7 +21,7 @@ def run(FILE_FORMAT, _, TIMED) -> float:
         time.sleep(1)
 
     #--------------------------------------------- Process results ---------------------------------------------#
-    start_time = time()
+    start_time = time.time()
 
     df_progress = get_df(spark, it_file, FILE_FORMAT) \
         .withColumn(YEAR_MONTH, F.date_format(F.to_timestamp(DATE, ORIGINAL_DATE_FORMAT), "yyyy_MM")) \
@@ -47,7 +46,7 @@ def run(FILE_FORMAT, _, TIMED) -> float:
     if TIMED:
         df_classification.collect()
         df_progress.collect()
-    end_time = time()
+    end_time = time.time()
 
     #---------------------------------------------- Save results -----------------------------------------------#
     write_results_on_hdfs(df_classification, FILE_FORMAT, result_file1)

@@ -2,7 +2,6 @@ from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
 from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 from deps import nifi_utils as nr
-from time import time
 
 import time
 
@@ -19,7 +18,7 @@ def run(FILE_FORMAT, USE_CACHE, TIMED) -> float:
         time.sleep(1)
 
     #--------------------------------------------- Process results ---------------------------------------------#
-    start_time = time()
+    start_time = time.time()
 
     it_rdd = sc.textFile(it_file)
     se_rdd = sc.textFile(se_file)
@@ -49,7 +48,7 @@ def run(FILE_FORMAT, USE_CACHE, TIMED) -> float:
                               )
 
     if TIMED: rdd_results.collect()
-    end_time = time()
+    end_time = time.time()
 
     #---------------------------------------------- Save results -----------------------------------------------#
     df_res = rdd_results.toDF(QUERY1_HEADER)

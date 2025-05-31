@@ -8,14 +8,12 @@ if __name__ =="__main__":
     arg_parser.add_argument("--api",    type=str, choices=["rdd", "df", "sql"], required=True)
     arg_parser.add_argument("--format", type=str, choices=["csv", "parquet"],   required=True)
     arg_parser.add_argument("--cache", dest="use_cache", action="store_true", default=False)
-    arg_parser.add_argument("--timed", dest="time",      action="store_true", default=False)
     args = arg_parser.parse_args()
 
     query:int   = args.q
     api:str     = args.api
     FILE_FORMAT = args.format
     USE_CACHE   = args.use_cache
-    TIMED       = args.time
 
     if USE_CACHE and api != "rdd": raise Exception("Cache is not supported for query 1 or 2 with DF or SQL API.")
 

@@ -1,11 +1,11 @@
-from datetime import datetime, timezone
-from influxdb_client import InfluxDBClient, Point, WritePrecision, WriteApi
+from datetime import datetime, timezone, timedelta
+from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS, WriteApi
 from deps.config import INFLUXDB_URL, INFLUXDB_TOKEN, INFLUXDB_ORG, INFLUXDB_BUCKET, InfluxWriterConfig
-from pyspark.sql.dataframe import DataFrame, Row
+from pyspark.sql.dataframe import DataFrame
 
 
-def get_write_api() -> tuple[InfluxDBClient, WriteApi]:
+def get_write_api():
     client = InfluxDBClient(url=INFLUXDB_URL, token=INFLUXDB_TOKEN, org=INFLUXDB_ORG)
     return client, client.write_api(write_options=SYNCHRONOUS)
 
@@ -45,11 +45,17 @@ def write_job_time_on_influxdb(write_api: WriteApi,
                                job_time: float,
                                run_num: int,
                                use_cache: bool):
-    timestamp = datetime.now().replace(tzinfo=timezone.utc)
-    point = Point(measurement)           \
-            .tag("run_num", run_num) \
+    # timestamp = datetime.now(timezone.utc) + timedelta(hours=run_num)
+    secs  = run_num % 60
+    mins  = (run_num % 3600) // 60
+    hours = run_num // 3600
+    timestamp = datetime.now()
+
+    print(timestamp)
+    point = Point(measurement) \
             .field("job_time", job_time) \
-            .field("use_cache", use_cache) \
+            .field("run_num", run_num) \
+            .tag("use_cache", use_cache) \
             .time(timestamp, WritePrecision.S)
 
     write_api.write(bucket=INFLUXDB_BUCKET, org=INFLUXDB_ORG, record=point)

@@ -3,7 +3,6 @@ from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
 from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 from deps import nifi_utils as nr
-from time import time
 
 import time
 
@@ -19,7 +18,7 @@ def run(FILE_FORMAT, _, TIMED) -> float:
         time.sleep(1)
 
     #--------------------------------------------- Process results ---------------------------------------------#
-    start_time = time()
+    start_time = time.time()
 
     it_df = get_df(spark, it_file, FILE_FORMAT)
     se_df = get_df(spark, se_file, FILE_FORMAT)
@@ -39,7 +38,7 @@ def run(FILE_FORMAT, _, TIMED) -> float:
                .orderBy(COUNTRY, YEAR)
 
     if TIMED: result.collect()
-    end_time = time()
+    end_time = time.time()
 
     #---------------------------------------------- Save results -----------------------------------------------#
     write_results_on_hdfs(result, FILE_FORMAT, result_file)
