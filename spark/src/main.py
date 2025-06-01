@@ -3,6 +3,7 @@ import importlib
 
 from deps.utils import get_spark
 
+
 if __name__ =="__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("--q",      type=int, choices=[1, 2, 3],            required=True)
