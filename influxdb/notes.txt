@@ -4,7 +4,6 @@
 | TOK:    iFLYSTheSTRi                                                                                               |
 | BUCKET: query_results                                                                                              |
 ----------------------------------------------------------------------------------------------------------------------
-
 ---------------------------------------------------- QUERY 1 RES -----------------------------------------------------
 from(bucket: "query_results")
   |> range(start: 2000-01-01T00:00:00Z, stop: 2030-01-01T06:00:00Z)
@@ -14,9 +13,17 @@ from(bucket: "query_results")
   |> filter(fn: (r) => r["_field"] == "CO2_int_avg" or r["_field"] == "CO2_int_min" or r["_field"] == "CO2_int_max")
   |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
   |> yield(name: "mean")
-
----------------------------------------------------- QUERY PERF -----------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------- QUERY PERF ------------------------------------------------------
+// Use as visualization the "XY Chart" and add axis manually
 from(bucket: "query_results")
   |> range(start: 2000-01-01T00:00:00Z, stop: 2030-01-01T06:00:00Z)
   |> filter(fn: (r) => r["_measurement"] == "perf_query1_rdd_csv")
-  |> filter(fn: (r) => r["_field"] == "job_time")
+  |> filter(fn: (r) => r["_field"] == "job_time" or r["_field"] == "run_num")
+  |> pivot(
+       rowKey:    ["_time"],
+       columnKey: ["_field"],
+       valueColumn: "_value"
+     )
+  |> keep(columns: ["_time", "run_num", "job_time"])
+-----------------------------------------------------------------------------------------------------------------------

@@ -11,39 +11,48 @@ if __name__ == "__main__":
     arg_parser.add_argument("--format", type=str, choices=["csv", "parquet"],   required=True)
     arg_parser.add_argument("--times",  type=int, default=50,                  required=False)
     arg_parser.add_argument("--cache", dest="use_cache", action="store_true", default=False)
+    arg_parser.add_argument("--log ",  dest="use_logs",  action="store_true", default=False)
     args = arg_parser.parse_args()
 
-    query:int   = args.q
-    api:str     = args.api
-    times:int   = args.times
+    QUERY:int   = args.q
+    API:str     = args.api
+    TIMES:int   = args.times
     FILE_FORMAT = args.format
     USE_CACHE   = args.use_cache
+    LOGS        = args.use_logs
 
-    if USE_CACHE and api != "rdd": raise Exception("Cache is not supported for query 1 or 2 with DF or SQL API.")
+    if USE_CACHE and API != "rdd": raise Exception("Cache is not supported for query 1 or 2 with DF or SQL API.")
 
-    spark, sc = get_spark(f"Query {query} - {api}")
-
-    try:
-        query_module = importlib.import_module(f'query{query}.query{query}_{api}')
-    except KeyError:
-        raise Exception("Invalid combination of query and api.")
+    try: query_module = importlib.import_module(f'query{QUERY}.query{QUERY}_{API}')
+    except KeyError: raise Exception("Invalid combination of query and api.")
 
     client, write_api = get_write_api()
     time_sum = 0
-    for i in range(1, times+1):
+    for num_run in range(1, TIMES + 1):
+        spark, sc = get_spark(f"Query {QUERY} - {API}")
         time: float = query_module.run(spark, sc, FILE_FORMAT, USE_CACHE, TIMED=True)
-        time_sum += time
-        remaining_seconds = time_sum / (i+1) * (times-i)
-        secs  = remaining_seconds % 60
-        mins  = (remaining_seconds % 3600) // 60
-        hours = remaining_seconds // 3600
-        print(f"Query {query} - {api} - {FILE_FORMAT} - Run {i} - Time: {time} s")
-        print(f"Expected remaining time: {hours} h {mins} m {secs} s")
+        spark.stop()
+
+        if LOGS: print_logs(time, num_run, TIMES)
+
         write_job_time_on_influxdb(write_api=write_api,
-                                   measurement=f"perf_query{query}_{api}_{FILE_FORMAT}",
+                                   measurement=f"perf_query{QUERY}_{API}_{FILE_FORMAT}",
                                    job_time=time,
-                                   run_num=i,
+                                   run_num=num_run,
                                    use_cache = USE_CACHE)
 
     client.close()
-    spark.stop()
+
+
+def print_logs(run_time: float, num_run: int, times: int):
+    if not hasattr(print_logs, "time_sum"):
+        print_logs.total = 0
+    print_logs.time_sum += run_time
+
+    remaining_seconds = print_logs.time_sum / (num_run+1) * (times - num_run)
+
+    secs  = remaining_seconds % 60
+    mins  = (remaining_seconds % 3600) // 60
+    hours = remaining_seconds // 3600
+    print(f"Run {num_run} - Time: {run_time} s")
+    print(f"Expected remaining time: {hours} h {mins} m {secs} s")
