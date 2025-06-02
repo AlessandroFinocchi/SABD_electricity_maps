@@ -1,26 +1,17 @@
-from deps.influxdb_utils import write_results_on_influxdb
-from deps.utils import *
-from deps import nifi_utils as nr
-from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
-
 import time
 
+from deps.influxdb_utils import write_results_on_influxdb
+from deps.utils import *
+from deps.hdfs_utils import write_results_on_hdfs
 
-def run(_: SparkSession, sc:SparkContext, FILE_FORMAT, USE_CACHE, TIMED) -> float:
 
-    #----------------------------------------------- Check hdfs ------------------------------------------------#
-    it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
+def run(_: SparkSession, sc:SparkContext, dataset_path: str, FILE_FORMAT, USE_CACHE:bool, TIMED) -> float:
+    #--------------------------------------------- Process results ---------------------------------------------#
     result_file1 = f"hdfs://namenode:54310/data/results/query2_rdd_classification.{FILE_FORMAT}" # classification file
     result_file2 = f"hdfs://namenode:54310/data/results/query2_rdd_progress.{FILE_FORMAT}"       # progress during months file
-
-    while not exists_on_hdfs(it_file, sc):
-        nr.run_nifi_flow()
-        time.sleep(1)
-
-    #--------------------------------------------- Process results ---------------------------------------------#
     start_time = time.time()
 
-    rdd = sc.textFile(it_file)
+    rdd = sc.textFile(dataset_path).filter(lambda x: country(x)=="Italy")
 
     rdd_avg = rdd.map(lambda x: (f'{year(x)}_{month(x)}', (intensity1(x), free_intensity(x), 1))) \
                  .reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1], x[2] + y[2]))               \

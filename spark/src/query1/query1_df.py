@@ -1,9 +1,10 @@
+import time
+
 from pyspark.sql import functions as F
 from deps.hdfs_utils import write_results_on_hdfs
 from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 
-import time
 
 def run(spark: SparkSession, _1: SparkContext, dataset_path: str,  FILE_FORMAT, _2: bool, TIMED) -> float:
 

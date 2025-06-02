@@ -1,28 +1,20 @@
-from pyspark.sql import functions as F
-from pyspark.sql.functions import col
-from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
-from deps.influxdb_utils import write_results_on_influxdb
-from deps.utils import *
-from deps import nifi_utils as nr
-
 import time
 
+from pyspark.sql import functions as F
+from pyspark.sql.functions import col
+from deps.hdfs_utils import write_results_on_hdfs
+from deps.influxdb_utils import write_results_on_influxdb
+from deps.utils import *
 
-def run(spark: SparkSession, sc:SparkContext, FILE_FORMAT, _, TIMED) -> float:
 
-    #----------------------------------------------- Check hdfs ------------------------------------------------#
-    it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
+def run(spark: SparkSession, _1:SparkContext, dataset_path: str, FILE_FORMAT, _2: bool, TIMED) -> float:
+    #--------------------------------------------- Process results ---------------------------------------------#
     result_file1 = f"hdfs://namenode:54310/data/results/query2_df_classification.{FILE_FORMAT}" # classification file
     result_file2 = f"hdfs://namenode:54310/data/results/query2_df_progress.{FILE_FORMAT}"       # progress during months file
-
-    while not exists_on_hdfs(it_file, sc):
-        nr.run_nifi_flow()
-        time.sleep(1)
-
-    #--------------------------------------------- Process results ---------------------------------------------#
     start_time = time.time()
 
-    df_progress = get_df(spark, it_file, FILE_FORMAT) \
+    df_progress = get_df(spark, dataset_path, FILE_FORMAT) \
+        .filter(col(COUNTRY)=="Italy")\
         .withColumn(YEAR_MONTH, F.date_format(F.to_timestamp(DATE, ORIGINAL_DATE_FORMAT), "yyyy_MM")) \
         .select(YEAR_MONTH, INTENSITY_DIRECT, CARBON_FREE_PERC) \
         .groupby(YEAR_MONTH) \

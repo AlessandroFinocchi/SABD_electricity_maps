@@ -2,8 +2,8 @@ from typing import Tuple
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
 from pyspark.sql.dataframe import DataFrame
-
 from deps.config import *
+
 
 def get_spark(appName: str) -> Tuple[SparkSession, SparkContext] :
     spark = SparkSession.builder \
@@ -15,18 +15,18 @@ def get_spark(appName: str) -> Tuple[SparkSession, SparkContext] :
 
     return spark, sc
 
-def country(rdd) -> str: return rdd.split(",")[1]
+def country(rdd_elem)        -> str:   return rdd_elem.split(",")[1]
 
-def year(rdd) -> int: return rdd.split(",")[0].split("-")[0]
+def year(rdd_elem)           -> int:   return rdd_elem.split(",")[0].split("-")[0]
 
-def month(rdd) -> int: return rdd.split(",")[0].split("-")[1]
+def month(rdd_elem)          -> int:   return rdd_elem.split(",")[0].split("-")[1]
 
-def intensity1(rdd) -> float: return float(rdd.split(",")[4])
+def intensity1(rdd_elem)     -> float: return float(rdd_elem.split(",")[4])
 
-def free_intensity(rdd) -> float: return float(rdd.split(",")[6])
+def free_intensity(rdd_elem) -> float: return float(rdd_elem.split(",")[6])
 
-def pretty_collect(rdd):
-    for result in rdd.collect():
+def pretty_collect(rdd_elem):
+    for result in rdd_elem.collect():
         print(result)
 
 def get_df(spark: SparkSession, filepath: str, file_format:str) -> DataFrame:
