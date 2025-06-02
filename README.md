@@ -28,3 +28,6 @@ and num_datanodes
 ```sh
     make clean
 ```
+
+Performance experiments have been computed on a personal computer 
+(1 processor with 12 cores, 16 GB ram).
