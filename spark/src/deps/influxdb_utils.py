@@ -45,13 +45,7 @@ def write_job_time_on_influxdb(write_api: WriteApi,
                                job_time: float,
                                run_num: int,
                                use_cache: bool):
-    # timestamp = datetime.now(timezone.utc) + timedelta(hours=run_num)
-    secs  = run_num % 60
-    mins  = (run_num % 3600) // 60
-    hours = run_num // 3600
     timestamp = datetime.now()
-
-    print(timestamp)
     point = Point(measurement) \
             .field("job_time", job_time) \
             .field("run_num", run_num) \

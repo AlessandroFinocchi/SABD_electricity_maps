@@ -19,11 +19,12 @@ if __name__ =="__main__":
     api:str     = args.api
     FILE_FORMAT = args.format
     USE_CACHE   = args.use_cache
-
     if USE_CACHE and api != "rdd": raise Exception("Cache is not supported for query 1 or 2 with DF or SQL API.")
 
-    spark, sc = get_spark(f"Query {query} - {api}")
+    try: query_module = importlib.import_module(f'query{query}.query{query}_{api}')
+    except KeyError: raise Exception("Invalid combination of query and api.")
 
+    spark, sc = get_spark(f"Query {query} - {api}")
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     energy_file = f"hdfs://namenode:54310/data/country_all.{FILE_FORMAT}"
     while not exists_on_hdfs(energy_file, sc):
@@ -31,8 +32,5 @@ if __name__ =="__main__":
         time.sleep(1)
 
     #----------------------------------------------- Execute job -----------------------------------------------#
-    try: query_module = importlib.import_module(f'query{query}.query{query}_{api}')
-    except KeyError: raise Exception("Invalid combination of query and api.")
     _ = query_module.run(spark, sc, energy_file, FILE_FORMAT, USE_CACHE, TIMED=False)
-
     spark.stop()

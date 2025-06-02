@@ -4,6 +4,20 @@ import importlib
 from deps.influxdb_utils import write_job_time_on_influxdb, get_write_api
 from deps.utils import get_spark
 
+
+def print_logs(run_time: float, num_run: int, times: int):
+    if not hasattr(print_logs, "time_sum"):
+        print_logs.time_sum = 0
+    print_logs.time_sum += run_time
+
+    run_width = len(str(times))
+    remaining_seconds = print_logs.time_sum / (num_run+1) * (times - num_run)
+    secs  = remaining_seconds % 60
+    mins  = int((remaining_seconds % 3600) // 60)
+    hours = int(remaining_seconds // 3600)
+
+    print(f"Run {num_run:>{run_width}d} - Time elapsed: {run_time:7.4f} s - Expected remaining time: {hours:2d} h {mins:2d} m {secs:5.2f} s")
+
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("--q",      type=int, choices=[1, 2, 3],            required=True)
@@ -11,7 +25,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--format", type=str, choices=["csv", "parquet"],   required=True)
     arg_parser.add_argument("--times",  type=int, default=50,                  required=False)
     arg_parser.add_argument("--cache", dest="use_cache", action="store_true", default=False)
-    arg_parser.add_argument("--log ",  dest="use_logs",  action="store_true", default=False)
+    arg_parser.add_argument("--log ",  dest="use_logs",  action="store_true", default=True)
     args = arg_parser.parse_args()
 
     QUERY:int   = args.q
@@ -20,7 +34,7 @@ if __name__ == "__main__":
     FILE_FORMAT = args.format
     USE_CACHE   = args.use_cache
     LOGS        = args.use_logs
-
+    energy_file = f"hdfs://namenode:54310/data/country_all.{FILE_FORMAT}"
     if USE_CACHE and API != "rdd": raise Exception("Cache is not supported for query 1 or 2 with DF or SQL API.")
 
     try: query_module = importlib.import_module(f'query{QUERY}.query{QUERY}_{API}')
@@ -30,7 +44,7 @@ if __name__ == "__main__":
     time_sum = 0
     for num_run in range(1, TIMES + 1):
         spark, sc = get_spark(f"Query {QUERY} - {API}")
-        time: float = query_module.run(spark, sc, FILE_FORMAT, USE_CACHE, TIMED=True)
+        time: float = query_module.run(spark, sc, energy_file, FILE_FORMAT, USE_CACHE, TIMED=True)
         spark.stop()
 
         if LOGS: print_logs(time, num_run, TIMES)
@@ -42,17 +56,3 @@ if __name__ == "__main__":
                                    use_cache = USE_CACHE)
 
     client.close()
-
-
-def print_logs(run_time: float, num_run: int, times: int):
-    if not hasattr(print_logs, "time_sum"):
-        print_logs.total = 0
-    print_logs.time_sum += run_time
-
-    remaining_seconds = print_logs.time_sum / (num_run+1) * (times - num_run)
-
-    secs  = remaining_seconds % 60
-    mins  = (remaining_seconds % 3600) // 60
-    hours = remaining_seconds // 3600
-    print(f"Run {num_run} - Time: {run_time} s")
-    print(f"Expected remaining time: {hours} h {mins} m {secs} s")
