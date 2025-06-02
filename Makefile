@@ -6,7 +6,16 @@ SUBMIT_QUERY = $(DEPS) && docker exec -it spark-master /opt/spark/bin/spark-subm
 		--py-files /opt/spark/code/src/deps.zip /opt/spark/code/src/
 
 gen:
-	docker compose up -d
+	docker compose -p sabd up -d
+
+gen_s:
+	@if [ $(words $(MAKECMDGOALS)) -ne 3 ]; then     \
+	  echo "Usage: make query <num_spark_workers> <num_datanodes>"; \
+	  exit 1; \
+	fi; \
+	SW=$(word 2,$(MAKECMDGOALS)); \
+	D=$(word 3,$(MAKECMDGOALS)); \
+	docker compose -p sabd up -d --scale spark-worker=$$SW --scale datanode=$$D
 
 clean:
 	docker compose down -v

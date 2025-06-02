@@ -1,14 +1,15 @@
 # SABD project: electricity maps analysis
 
 ## Usage
-1. First, compile spark job dependencies using the command
+1. First, compile spark job dependencies
 ```sh
     make deps
 ```
 
-2. Compose docker services
+2. Compose docker services with scaling positive integers parameters num_spark_workers 
+and num_datanodes 
 ```sh
-    make gen
+    make gen_s <num_spark_workers> <num_datanodes>
 ```
 
 3. Run queries with parameters where
@@ -19,9 +20,6 @@
     make query <num> <api> <format>
 ```
 4. Get performance metrics on InfluxDB
-- num $ \in \{1,2,3\} $
-- api $\in \{ \texttt{rdd}, \texttt{df}, \texttt{sql} \}$
-- format $\in \{ \texttt{csv}, \texttt{parquet} \}$
 ```
     make perf <num> <api> <format>
 ```
