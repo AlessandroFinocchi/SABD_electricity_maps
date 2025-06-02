@@ -1,28 +1,16 @@
-from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
-from deps.influxdb_utils import write_results_on_influxdb
-from deps.utils import *
-from deps import nifi_utils as nr
-
 import time
 
+from deps.hdfs_utils import write_results_on_hdfs
+from deps.influxdb_utils import write_results_on_influxdb
+from deps.utils import *
 
-def run(_: SparkSession, sc:SparkContext, FILE_FORMAT, USE_CACHE, TIMED) -> float:
 
-    #----------------------------------------------- Check hdfs ------------------------------------------------#
-    it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
-    se_file = f"hdfs://namenode:54310/data/SE_all.{FILE_FORMAT}"
-    result_file = f"hdfs://namenode:54310/data/results/query1_rdd.{FILE_FORMAT}"
-    while not exists_on_hdfs(it_file, sc) or not exists_on_hdfs(se_file, sc):
-        nr.run_nifi_flow()
-        time.sleep(1)
-
+def run(_: SparkSession, sc:SparkContext, dataset_path: str,  FILE_FORMAT, USE_CACHE, TIMED) -> float:
     #--------------------------------------------- Process results ---------------------------------------------#
+    result_file = f"hdfs://namenode:54310/data/results/query1_rdd.{FILE_FORMAT}"
     start_time = time.time()
 
-    it_rdd = sc.textFile(it_file)
-    se_rdd = sc.textFile(se_file)
-
-    rdd = it_rdd.union(se_rdd)
+    rdd = sc.textFile(dataset_path)
     rdd_map = rdd.map(lambda x: ((country(x), year(x)), (intensity1(x), free_intensity(x), 1)))
     rdd_map = rdd_map.cache() if USE_CACHE else rdd_map
 

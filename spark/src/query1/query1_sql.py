@@ -1,32 +1,21 @@
 from pyspark.sql import functions as F
-from deps.hdfs_utils import write_results_on_hdfs, exists_on_hdfs
+from deps.hdfs_utils import write_results_on_hdfs
 from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
-from deps import nifi_utils as nr
 
 import time
 
-def run(spark: SparkSession, sc:SparkContext, FILE_FORMAT, _, TIMED) -> float:
-
-    #----------------------------------------------- Check hdfs ------------------------------------------------#
-    it_file = f"hdfs://namenode:54310/data/IT_all.{FILE_FORMAT}"
-    se_file = f"hdfs://namenode:54310/data/SE_all.{FILE_FORMAT}"
-    result_file = f"hdfs://namenode:54310/data/results/query1_sql.{FILE_FORMAT}"
-    view_name = "view1"
-    while not exists_on_hdfs(it_file, sc) or not exists_on_hdfs(se_file, sc):
-        nr.run_nifi_flow()
-        time.sleep(1)
+def run(spark: SparkSession, _1: SparkContext, dataset_path: str, FILE_FORMAT, _2: bool, TIMED) -> float:
 
     #--------------------------------------------- Process results ---------------------------------------------#
+    result_file = f"hdfs://namenode:54310/data/results/query1_sql.{FILE_FORMAT}"
+    view_name = "view1"
     start_time = time.time()
 
-    it_df = spark.read.csv(it_file, header=False, inferSchema=True).toDF(*ORIGINAL_HEADER)
-    se_df = spark.read.csv(se_file, header=False, inferSchema=True).toDF(*ORIGINAL_HEADER)
-
-    df = it_df.union(se_df).withColumn(
-        YEAR,
-        F.year(F.to_timestamp(DATE, ORIGINAL_DATE_FORMAT))
-    )
+    df = spark.read\
+              .csv(dataset_path, header=False, inferSchema=True)\
+              .toDF(*ORIGINAL_HEADER) \
+              .withColumn(YEAR, F.year(F.to_timestamp(DATE, ORIGINAL_DATE_FORMAT)))
 
     df.createOrReplaceTempView(view_name)
 

@@ -14,7 +14,7 @@ def exists_on_hdfs(path_str:str, sc: SparkContext) -> bool:
         return False
 
 def write_results_on_hdfs(result, file_format:str, result_file:str):
-    # result.show()
+    result.show()
     if file_format == CSV: result.coalesce(1).write.mode("overwrite").csv(result_file)
     elif file_format == PARQUET: result.coalesce(1).write.mode("overwrite").parquet(result_file)
     else: raise Exception(f"Unsupported file format: {file_format}")

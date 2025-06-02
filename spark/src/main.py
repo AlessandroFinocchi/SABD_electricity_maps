@@ -1,7 +1,10 @@
 import argparse
 import importlib
+import time
 
+from deps.hdfs_utils import exists_on_hdfs
 from deps.utils import get_spark
+from deps import nifi_utils as nr
 
 
 if __name__ =="__main__":
@@ -21,11 +24,15 @@ if __name__ =="__main__":
 
     spark, sc = get_spark(f"Query {query} - {api}")
 
-    try:
-        query_module = importlib.import_module(f'query{query}.query{query}_{api}')
-    except KeyError:
-        raise Exception("Invalid combination of query and api.")
+    #----------------------------------------------- Check hdfs ------------------------------------------------#
+    energy_file = f"hdfs://namenode:54310/data/country_all.{FILE_FORMAT}"
+    while not exists_on_hdfs(energy_file, sc):
+        nr.run_nifi_flow()
+        time.sleep(1)
 
-    _ = query_module.run(spark, sc, FILE_FORMAT, USE_CACHE, TIMED=False)
+    #----------------------------------------------- Execute job -----------------------------------------------#
+    try: query_module = importlib.import_module(f'query{query}.query{query}_{api}')
+    except KeyError: raise Exception("Invalid combination of query and api.")
+    _ = query_module.run(spark, sc, energy_file, FILE_FORMAT, USE_CACHE, TIMED=False)
 
     spark.stop()
