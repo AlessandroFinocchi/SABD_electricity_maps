@@ -13,9 +13,9 @@ and num_datanodes
 ```
 
 3. Run queries with parameters where
-- num $ \in \{1,2,3\} $
-- api $\in \{ \texttt{rdd}, \texttt{df}, \texttt{sql} \}$
-- format $\in \{ \texttt{csv}, \texttt{parquet} \}$
+- num $\in$ \{ $1,2,3$ \}
+- api $\in$ \{ $\texttt{rdd}$, $\texttt{df}$, $\texttt{sql}$ \}
+- format $\in$ \{ $\texttt{csv}$, $\texttt{parquet}$ \}
 ```
     make query <num> <api> <format>
 ```
@@ -24,7 +24,7 @@ and num_datanodes
     make perf <num> <api> <format>
 ```
 
-4. Eventually compose down docker services
+5. Eventually compose down docker services
 ```sh
     make clean
 ```
