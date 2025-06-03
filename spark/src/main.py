@@ -30,6 +30,7 @@ if __name__ =="__main__":
     while not exists_on_hdfs(energy_file, sc):
         nr.run_nifi_flow()
         time.sleep(1)
+    nr.stop_nifi_flow()
 
     #----------------------------------------------- Execute job -----------------------------------------------#
     _ = query_module.run(spark, sc, energy_file, FILE_FORMAT, USE_CACHE, TIMED=False)
