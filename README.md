@@ -6,14 +6,15 @@
     make deps
 ```
 
-2. Compose docker services with scaling positive integers parameters num_spark_workers 
-and num_datanodes 
+2. Compose docker services with scaling parameters 
+- num_spark_workers $\in$ \{ $1,\;2, \dots$ \}
+- num_datanodes $\in$ \{ $1,\;2, \dots \;8$ \}
 ```sh
     make gen_s <num_spark_workers> <num_datanodes>
 ```
 
 3. Run queries with parameters where
-- num $\in$ \{ $1,2,3$ \}
+- num $\in$ \{ $1,\;2,\;3$ \}
 - api $\in$ \{ $\texttt{rdd}$, $\texttt{df}$, $\texttt{sql}$ \}
 - format $\in$ \{ $\texttt{csv}$, $\texttt{parquet}$ \}
 ```
