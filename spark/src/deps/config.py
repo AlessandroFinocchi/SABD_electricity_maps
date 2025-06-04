@@ -54,7 +54,7 @@ QUERY2_HEADER = [YEAR_MONTH,
                  INTENSITY_DIRECT_AVG,
                  CARBON_FREE_PERC_AVG]
 
-# Influx reference constants
+# Influx reference constants #todo: togli da qui e leggi dai file tutto!
 INFLUXDB_URL="http://influxdb2:8086"
 INFLUXDB_TOKEN="iFLYSTheSTRi"
 INFLUXDB_ORG="it.uniroma2"

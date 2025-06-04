@@ -18,7 +18,7 @@ gen_s:
 	docker compose -p sabd up -d --scale spark-worker=$$SW --scale datanode=$$D
 
 clean:
-	docker compose down -v
+	docker compose -p sabd down -v
 	docker images | grep "sabd*" | awk '{print $3}' | xargs docker rmi
 
 flow:
