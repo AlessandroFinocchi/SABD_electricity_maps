@@ -43,13 +43,11 @@ def write_results_on_influxdb(df_res: DataFrame,
 def write_job_time_on_influxdb(write_api: WriteApi,
                                measurement: str,
                                job_time: float,
-                               run_num: int,
-                               use_cache: bool):
+                               run_num: int):
     timestamp = datetime.now()
     point = Point(measurement) \
             .field("job_time", job_time) \
             .field("run_num", run_num) \
-            .tag("use_cache", use_cache) \
             .time(timestamp, WritePrecision.S)
 
     write_api.write(bucket=INFLUXDB_BUCKET, org=INFLUXDB_ORG, record=point)

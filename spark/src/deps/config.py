@@ -1,3 +1,4 @@
+SEP     = "=" * 60
 CSV     = "csv"
 PARQUET = "parquet"
 ORIGINAL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"

@@ -6,7 +6,7 @@ from deps.utils import *
 from deps.hdfs_utils import write_results_on_hdfs
 
 
-def run(spark: SparkSession, _1:SparkContext, dataset_path: str, FILE_FORMAT, _2: bool, TIMED) -> float:
+def run(spark: SparkSession, _:SparkContext, dataset_path: str, FILE_FORMAT, TIMED) -> float:
     #--------------------------------------------- Process results ---------------------------------------------#
     result_file1 = f"hdfs://namenode:54310/data/results/query2_sql_classification.{FILE_FORMAT}" # classification file
     result_file2 = f"hdfs://namenode:54310/data/results/query2_sql_progress.{FILE_FORMAT}"       # progress during months file

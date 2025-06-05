@@ -6,7 +6,7 @@ from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 
 
-def run(spark: SparkSession, _1: SparkContext, dataset_path: str,  FILE_FORMAT, _2: bool, TIMED) -> float:
+def run(spark: SparkSession, _: SparkContext, dataset_path: str,  FILE_FORMAT, TIMED) -> float:
 
     #--------------------------------------------- Process results ---------------------------------------------#
     result_file = f"hdfs://namenode:54310/data/results/query1_df.{FILE_FORMAT}"

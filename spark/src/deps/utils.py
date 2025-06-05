@@ -34,9 +34,3 @@ def get_df(spark: SparkSession, filepath: str, file_format:str) -> DataFrame:
     elif file_format == PARQUET: df = spark.read.parquet(filepath)
     else: raise Exception(f"Unsupported file format: {file_format}")
     return df.toDF(*ORIGINAL_HEADER)
-
-def check_params(use_cache: bool, query:int, api: str,) -> None:
-    if use_cache:
-        if api == "rdd":                 return
-        elif api == "df" and query == 2: return
-        else:                            raise Exception("Cache is not supported for this configuration.")

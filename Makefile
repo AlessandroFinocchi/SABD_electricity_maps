@@ -1,13 +1,5 @@
 .PHONY: gen clean flow deps query
 
-#DEPS = rm -f spark/src/deps.zip && mkdir temp && mkdir temp/env && \
-#       cp -r influxdb/env/influxdb2-admin-token temp/env && \
-#       cp -r spark/src/deps temp/ && \
-#       cp -r spark/src/query1 temp/ && \
-#       cp -r spark/src/query2 temp/ && \
-#       cd temp && zip -r ../spark/src/deps.zip * && \
-#       cd .. && rm -rf temp
-
 DEPS = cd spark/src && \
 	   rm -f deps.zip && \
 	   zip -r deps.zip * && \
