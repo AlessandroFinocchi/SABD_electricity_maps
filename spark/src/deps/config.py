@@ -54,11 +54,12 @@ QUERY2_HEADER = [YEAR_MONTH,
                  INTENSITY_DIRECT_AVG,
                  CARBON_FREE_PERC_AVG]
 
-# Influx reference constants #todo: togli da qui e leggi dai file tutto!
+# Influx reference constants
 INFLUXDB_URL="http://influxdb2:8086"
-INFLUXDB_TOKEN="iFLYSTheSTRi"
 INFLUXDB_ORG="it.uniroma2"
 INFLUXDB_BUCKET="query_results"
+with open("/opt/spark/code/src/env/influxdb2-admin-token", 'r') as file:
+    INFLUXDB_TOKEN = file.read()
 
 class InfluxWriterConfig:
     def __init__(self, header,

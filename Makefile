@@ -1,6 +1,18 @@
 .PHONY: gen clean flow deps query
 
-DEPS = (cd spark/src && rm -f deps.zip && zip -r deps.zip *)
+#DEPS = rm -f spark/src/deps.zip && mkdir temp && mkdir temp/env && \
+#       cp -r influxdb/env/influxdb2-admin-token temp/env && \
+#       cp -r spark/src/deps temp/ && \
+#       cp -r spark/src/query1 temp/ && \
+#       cp -r spark/src/query2 temp/ && \
+#       cd temp && zip -r ../spark/src/deps.zip * && \
+#       cd .. && rm -rf temp
+
+DEPS = cd spark/src && \
+	   rm -f deps.zip && \
+	   zip -r deps.zip * && \
+	   mkdir -p env && \
+	   cp ../../influxdb/env/influxdb2-admin-token ./env/
 
 SUBMIT_QUERY = $(DEPS) && docker exec -it spark-master /opt/spark/bin/spark-submit \
 		--py-files /opt/spark/code/src/deps.zip /opt/spark/code/src/

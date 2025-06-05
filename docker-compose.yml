@@ -33,6 +33,10 @@ services:
       context: ./spark   # relative path to the Nifi Dockerfile
       dockerfile: Dockerfile
     hostname: spark-master
+    depends_on:
+      - nifi
+      - namenode
+      - influxdb2
     command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
     environment:
       - SPARK_MODE=master
