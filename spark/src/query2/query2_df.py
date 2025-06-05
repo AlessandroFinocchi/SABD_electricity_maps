@@ -2,12 +2,14 @@ import time
 
 from pyspark.sql import functions as F
 from pyspark.sql.functions import col
+from sympy.core.cache import USE_CACHE
+
 from deps.hdfs_utils import write_results_on_hdfs
 from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 
 
-def run(spark: SparkSession, _1:SparkContext, dataset_path: str, FILE_FORMAT, _2: bool, TIMED) -> float:
+def run(spark: SparkSession, _:SparkContext, dataset_path: str, FILE_FORMAT, use_cache: bool, TIMED) -> float:
     #--------------------------------------------- Process results ---------------------------------------------#
     result_file1 = f"hdfs://namenode:54310/data/results/query2_df_classification.{FILE_FORMAT}" # classification file
     result_file2 = f"hdfs://namenode:54310/data/results/query2_df_progress.{FILE_FORMAT}"       # progress during months file
@@ -23,6 +25,8 @@ def run(spark: SparkSession, _1:SparkContext, dataset_path: str, FILE_FORMAT, _2
              F.avg(CARBON_FREE_PERC).alias(CARBON_FREE_PERC_AVG),
         ) \
         .orderBy(YEAR_MONTH)
+
+    df_progress = df_progress.cache() if use_cache else df_progress
 
     df_avg_int_dsc = df_progress.orderBy(col(INTENSITY_DIRECT_AVG).desc()).limit(5)
     df_avg_int_asc = df_progress.orderBy(col(INTENSITY_DIRECT_AVG).asc()).limit(5)

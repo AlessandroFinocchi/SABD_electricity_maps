@@ -5,14 +5,14 @@ from deps.influxdb_utils import write_results_on_influxdb
 from deps.utils import *
 
 
-def run(_: SparkSession, sc:SparkContext, dataset_path: str,  FILE_FORMAT, USE_CACHE, TIMED) -> float:
+def run(_: SparkSession, sc:SparkContext, dataset_path: str,  FILE_FORMAT, use_cache, TIMED) -> float:
     #--------------------------------------------- Process results ---------------------------------------------#
     result_file = f"hdfs://namenode:54310/data/results/query1_rdd.{FILE_FORMAT}"
     start_time = time.time()
 
     rdd = sc.textFile(dataset_path)
     rdd_map = rdd.map(lambda x: ((country(x), year(x)), (intensity1(x), free_intensity(x), 1)))
-    rdd_map = rdd_map.cache() if USE_CACHE else rdd_map
+    rdd_map = rdd_map.cache() if use_cache else rdd_map
 
     rdd_min = rdd_map.reduceByKey(lambda x, y: (min(x[0], y[0]), min(x[1], y[1])))
     rdd_max = rdd_map.reduceByKey(lambda x, y: (max(x[0], y[0]), max(x[1], y[1])))

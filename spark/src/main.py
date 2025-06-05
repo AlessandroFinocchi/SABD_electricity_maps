@@ -3,7 +3,7 @@ import importlib
 import time
 
 from deps.hdfs_utils import exists_on_hdfs
-from deps.utils import get_spark
+from deps.utils import get_spark, check_params
 from deps import nifi_utils as nr
 
 
@@ -15,16 +15,17 @@ if __name__ =="__main__":
     arg_parser.add_argument("--cache", dest="use_cache", action="store_true", default=False)
     args = arg_parser.parse_args()
 
-    query:int   = args.q
-    api:str     = args.api
+    QUERY:int   = args.q
+    API:str     = args.api
     FILE_FORMAT = args.format
     USE_CACHE   = args.use_cache
-    if USE_CACHE and api != "rdd": raise Exception("Cache is not supported for query 1 or 2 with DF or SQL API.")
 
-    try: query_module = importlib.import_module(f'query{query}.query{query}_{api}')
+    check_params(use_cache=USE_CACHE, query=QUERY, api=API)
+
+    try: query_module = importlib.import_module(f'query{QUERY}.query{QUERY}_{API}')
     except KeyError: raise Exception("Invalid combination of query and api.")
 
-    spark, sc = get_spark(f"Query {query} - {api}")
+    spark, sc = get_spark(f"Query {QUERY} - {API}")
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     energy_file = f"hdfs://namenode:54310/data/country_all.{FILE_FORMAT}"
     while not exists_on_hdfs(energy_file, sc):

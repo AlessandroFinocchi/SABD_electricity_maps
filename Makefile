@@ -58,3 +58,11 @@ perf:
 	API=$(word 3,$(MAKECMDGOALS)); \
 	FMT=$(word 4,$(MAKECMDGOALS)); \
 	$(SUBMIT_QUERY)benchmark_runner.py --q $$Q --api $$API --format $$FMT
+
+all_perf:
+	$(SUBMIT_QUERY)benchmark_runner.py --q 1 --api rdd --format csv
+	$(SUBMIT_QUERY)benchmark_runner.py --q 1 --api df  --format csv
+	$(SUBMIT_QUERY)benchmark_runner.py --q 1 --api sql --format csv
+	$(SUBMIT_QUERY)benchmark_runner.py --q 2 --api rdd --format csv
+	$(SUBMIT_QUERY)benchmark_runner.py --q 2 --api df --format csv
+	$(SUBMIT_QUERY)benchmark_runner.py --q 2 --api sql --format csv
