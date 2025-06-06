@@ -1,4 +1,6 @@
 from pyspark import SparkContext
+from pyspark.sql.dataframe import DataFrame
+
 from deps.config import CSV, PARQUET
 
 
@@ -13,8 +15,9 @@ def exists_on_hdfs(path_str:str, sc: SparkContext) -> bool:
         print(f"ERROR: Input file '{path_str}' not found in HDFS.")
         return False
 
-def write_results_on_hdfs(result, file_format:str, result_file:str):
+def write_results_on_hdfs(result: DataFrame, file_format:str, result_file:str):
     result.show()
+    result.printSchema()
     if file_format == CSV: result.coalesce(1).write.mode("overwrite").csv(result_file)
     elif file_format == PARQUET: result.coalesce(1).write.mode("overwrite").parquet(result_file)
     else: raise Exception(f"Unsupported file format: {file_format}")

@@ -88,11 +88,11 @@ QUERY1_CONFIG = InfluxWriterConfig(header=QUERY1_HEADER,
                                    time_format=QUERY1_DATE_FORMAT,
                                    timestamp_col=0,
                                    tag_cols=[1],
-                                   field_cols=[2, 3, 4, 5, 6, 7])
+                                   field_cols=[0, 2, 3, 4, 5, 6, 7])
 
 QUERY2_CONFIG = InfluxWriterConfig(header=QUERY2_HEADER,
                                    time_format=QUERY2_DATE_FORMAT,
                                    timestamp_col=0,
                                    tag_cols=[],
-                                   field_cols=[1, 2]
+                                   field_cols=[0, 1, 2]
 )

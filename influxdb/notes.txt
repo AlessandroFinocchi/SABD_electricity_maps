@@ -1,4 +1,6 @@
 ------------------------------------------------------- CONFIG -------------------------------------------------------
+| USR:    admin                                                                                      |
+| PSW:    admin                                                                                      |
 | URL:    http://influxdb2:8086                                                                                      |
 | ORG:    it.uniroma2                                                                                                |
 | TOKEN:  iFLYSTheSTRi                                                                                               |
@@ -7,13 +9,28 @@
 ----------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------- QUERY 1 RES -----------------------------------------------------
 from(bucket: "query_results")
-  |> range(start: 2000-01-01T00:00:00Z, stop: 2030-01-01T06:00:00Z)
-  |> filter(fn: (r) => r["_measurement"] == "query1_rdd")
-  |> filter(fn: (r) => r["Country"] == "Italy" or r["Country"] == "Sweden")
-  |> filter(fn: (r) => r["_field"] == "CFE_%_avg" or r["_field"] == "CFE_%_min" or r["_field"] == "CFE_%_max")
-  |> filter(fn: (r) => r["_field"] == "CO2_int_avg" or r["_field"] == "CO2_int_min" or r["_field"] == "CO2_int_max")
-  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
-  |> yield(name: "mean")
+    |> range(start: 2000-01-01T00:00:00Z, stop: 2030-01-01T06:00:00Z)
+    |> filter(fn: (r) => r["_measurement"] == "query1_rdd")
+    |> filter(fn: (r) => r["Country"] == "Italy" or r["Country"] == "Sweden")
+    |> filter(fn: (r) => r["_field"] == "Year" or r["_field"] == "CFE_%_avg" or r["_field"] == "CO2_int_avg")
+    |> pivot(
+       rowKey:    ["_time"],
+       columnKey: ["_field"],
+       valueColumn: "_value"
+     )
+    |> keep(columns: ["_time", "Year", "Country", "CO2_int_avg", "CFE_%_avg"])
+----------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------- QUERY 2 RES -----------------------------------------------------
+from(bucket: "query_results")
+    |> range(start: 2000-01-01T00:00:00Z, stop: 2030-01-01T06:00:00Z)
+    |> filter(fn: (r) => r["_measurement"] == "query2_rdd")
+    |> filter(fn: (r) => r["_field"] == "Year_Month" or r["_field"] == "CO2_int_avg" or r["_field"] == "CFE_%_avg")
+    |> pivot(
+       rowKey:    ["_time"],
+       columnKey: ["_field"],
+       valueColumn: "_value"
+     )
+    |> keep(columns: ["_time", "Year_Month", "CO2_int_avg", "CFE_%_avg"])
 ----------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------- QUERY PERF ------------------------------------------------------
 // Use as visualization the "XY Chart" and add axis manually
@@ -50,7 +67,6 @@ from(bucket: "query_results")
 | QUERY 2 - DF  - CSV : min = 0.856, max = 7.58, mean = 1.07,  median = 0.970, variance = 0.450                      |
 | QUERY 2 - SQL - CSV : min = 0.816, max = 7.82, mean = 1.08,  median = 0.981, variance = 0.482                      |
 ----------------------------------------------------------------------------------------------------------------------
-
 -------------------------------------------- QUERY-RES-PRQ-2 SPARK WORK ----------------------------------------------
 | QUERY 1 - DF  - PRQ : min = 0.425, max = 5.59, mean = 0.573, median = 0.492, variance = 0.294                      |
 | QUERY 1 - SQL - PRQ : min = 0.376, max = 5.68, mean = 0.566, median = 0.488, variance = 0.325                      |
