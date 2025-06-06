@@ -11,10 +11,8 @@ def run(spark: SparkSession, _: SparkContext, dataset_path: str, FILE_FORMAT, TI
     view_name = "view1"
     start_time = time.time()
 
-    df = spark.read\
-              .csv(dataset_path, header=False, inferSchema=True)\
-              .toDF(*ORIGINAL_HEADER) \
-              .withColumn(YEAR, F.year(F.to_timestamp(DATE, ORIGINAL_DATE_FORMAT)))
+    df = get_df(spark, dataset_path, FILE_FORMAT) \
+         .withColumn(YEAR, F.year(F.to_timestamp(DATE, ORIGINAL_DATE_FORMAT)))
 
     df.createOrReplaceTempView(view_name)
 

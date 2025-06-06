@@ -56,5 +56,9 @@ all_perf:
 	$(SUBMIT_QUERY)benchmark_runner.py --q 1 --api df  --format csv
 	$(SUBMIT_QUERY)benchmark_runner.py --q 1 --api sql --format csv
 	$(SUBMIT_QUERY)benchmark_runner.py --q 2 --api rdd --format csv
-	$(SUBMIT_QUERY)benchmark_runner.py --q 2 --api df --format csv
+	$(SUBMIT_QUERY)benchmark_runner.py --q 2 --api df  --format csv
 	$(SUBMIT_QUERY)benchmark_runner.py --q 2 --api sql --format csv
+	$(SUBMIT_QUERY)benchmark_runner.py --q 1 --api df  --format parquet
+	$(SUBMIT_QUERY)benchmark_runner.py --q 1 --api sql --format parquet
+	$(SUBMIT_QUERY)benchmark_runner.py --q 2 --api df  --format parquet
+	$(SUBMIT_QUERY)benchmark_runner.py --q 2 --api sql --format parquet
