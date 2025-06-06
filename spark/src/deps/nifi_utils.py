@@ -8,7 +8,7 @@ NIFI_PORT = "8443"
 CLIENT_ID = "b9112890-f366-44d4-a0d3-6ed7f4d53cec"
 PG_ID     = "6f8f46ad-5017-32f9-8d71-b68fca956eb3"
 BASE_URL  = f"https://{NIFI_HOST}:{NIFI_PORT}"
-PG_LEN    = 10
+PG_LEN    = 11
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

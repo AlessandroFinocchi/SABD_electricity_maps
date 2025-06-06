@@ -8,15 +8,8 @@ QUERY2_DATE_FORMAT   = "%Y_%m"
 # Original headers
 DATE                 = "Datetime"
 COUNTRY              = "Country"
-ZONE_NAME            = "Zone_name"
-ZONE_ID              = "Zone_id"
 INTENSITY_DIRECT     = "CO2_int_direct"
-INTENSITY_CYCLE      = "CO2_int_lc"
 CARBON_FREE_PERC     = "CFE_%"
-RENEWABLE_PERC       = "RE_%"
-DATA_SOURCE          = "Data_source"
-DATA_ESTIMATED       = "Data_estimated"
-DATA_ESTIMATION_METH = "Data_estimation method"
 
 # New headers
 YEAR                 = "Year"
@@ -32,15 +25,8 @@ CARBON_FREE_PERC_MAX = "CFE_%_max"
 # Headers
 ORIGINAL_HEADER = [DATE,
           COUNTRY,
-          ZONE_NAME,
-          ZONE_ID,
           INTENSITY_DIRECT,
-          INTENSITY_CYCLE,
-          CARBON_FREE_PERC,
-          RENEWABLE_PERC,
-          DATA_SOURCE,
-          DATA_ESTIMATED,
-          DATA_ESTIMATION_METH]
+          CARBON_FREE_PERC]
 
 QUERY1_HEADER = [YEAR,
                  COUNTRY,

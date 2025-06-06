@@ -25,7 +25,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--api",    type=str, choices=["rdd", "df", "sql"], required=True)
     arg_parser.add_argument("--format", type=str, choices=["csv", "parquet"],   required=True)
     arg_parser.add_argument("--times",  type=int, default=100,                  required=False)
-    arg_parser.add_argument("--log ",   dest="use_logs",  action="store_true", default=True)
+    arg_parser.add_argument("--log ",   dest="use_logs",  action="store_true",  default=True)
     args = arg_parser.parse_args()
 
     QUERY:int   = args.q

@@ -21,9 +21,9 @@ def year(rdd_elem)           -> int:   return int(rdd_elem.split(",")[0].split("
 
 def month(rdd_elem)          -> int:   return int(rdd_elem.split(",")[0].split("-")[1])
 
-def intensity1(rdd_elem)     -> float: return float(rdd_elem.split(",")[4])
+def intensity1(rdd_elem)     -> float: return float(rdd_elem.split(",")[2])
 
-def free_intensity(rdd_elem) -> float: return float(rdd_elem.split(",")[6])
+def free_intensity(rdd_elem) -> float: return float(rdd_elem.split(",")[3])
 
 def pretty_collect(rdd_elem):
     for result in rdd_elem.collect():
