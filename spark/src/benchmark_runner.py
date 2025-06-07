@@ -3,7 +3,7 @@ import importlib
 
 from deps.config import SEP
 from deps.influxdb_utils import write_job_time_on_influxdb, get_write_api
-from deps.utils import get_spark
+from deps.utils import get_spark, check_hdfs
 
 
 def print_logs(run_time: float, num_run: int, times: int):
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--q",      type=int, choices=[1, 2, 3],            required=True)
     arg_parser.add_argument("--api",    type=str, choices=["rdd", "df", "sql"], required=True)
     arg_parser.add_argument("--format", type=str, choices=["csv", "parquet"],   required=True)
-    arg_parser.add_argument("--times",  type=int, default=100,                  required=False)
+    arg_parser.add_argument("--times",  type=int, default=1,                  required=False)
     arg_parser.add_argument("--log ",   dest="use_logs",  action="store_true",  default=True)
     args = arg_parser.parse_args()
 
@@ -33,8 +33,14 @@ if __name__ == "__main__":
     TIMES:int   = args.times
     FILE_FORMAT = args.format
     LOGS        = args.use_logs
-    energy_file = f"hdfs://namenode:54310/data/country_all.{FILE_FORMAT}"
 
+    #----------------------------------------------- Check hdfs ------------------------------------------------#
+    spark, sc = get_spark(f"Query {QUERY} - {API}")
+    energy_file = f"hdfs://namenode:54310/data/country_all.{FILE_FORMAT}"
+    check_hdfs(sc, energy_file, FILE_FORMAT)
+    spark.stop()
+
+    #----------------------------------------------- Execute job ------------------------------------------------#
     try: query_module = importlib.import_module(f'query{QUERY}.query{QUERY}_{API}')
     except KeyError: raise Exception("Invalid combination of query and api.")
 
