@@ -2,6 +2,8 @@ import argparse
 import importlib
 import time
 
+from urllib3.exceptions import NewConnectionError, MaxRetryError
+
 from deps.hdfs_utils import exists_on_hdfs
 from deps.utils import get_spark
 from deps import nifi_utils as nr
@@ -25,8 +27,12 @@ if __name__ =="__main__":
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     energy_file = f"hdfs://namenode:54310/data/country_all.{FILE_FORMAT}"
     while not exists_on_hdfs(energy_file, sc):
-        nr.run_nifi_flow()
-        time.sleep(1)
+        try:
+            nr.run_nifi_flow()
+            time.sleep(5)
+        except Exception as e:
+            print(f"NiFi not up yet, waiting 5s…")
+            time.sleep(5)
     nr.stop_nifi_flow()
 
     #----------------------------------------------- Execute job -----------------------------------------------#
