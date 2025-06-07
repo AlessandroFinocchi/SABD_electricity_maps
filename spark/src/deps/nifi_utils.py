@@ -1,5 +1,7 @@
 import requests
 import urllib3
+import os
+
 from enum import Enum
 
 
@@ -19,8 +21,8 @@ class State(Enum):
 def get_jwt() -> str:
     auth_url = f"{BASE_URL}/nifi-api/access/token"
     auth_data = {
-        "username": "admin",
-        "password": "ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB"
+        "username": os.environ['NIFI_USR'],
+        "password": os.environ['NIFI_PSW']
     }
     headers_auth = {
         "Content-Type": "application/x-www-form-urlencoded"

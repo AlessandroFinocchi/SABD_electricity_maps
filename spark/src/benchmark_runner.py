@@ -24,7 +24,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--q",      type=int, choices=[1, 2, 3],            required=True)
     arg_parser.add_argument("--api",    type=str, choices=["rdd", "df", "sql"], required=True)
     arg_parser.add_argument("--format", type=str, choices=["csv", "parquet"],   required=True)
-    arg_parser.add_argument("--times",  type=int, default=1,                  required=False)
+    arg_parser.add_argument("--times",  type=int, default=100,                  required=False)
     arg_parser.add_argument("--log ",   dest="use_logs",  action="store_true",  default=True)
     args = arg_parser.parse_args()
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     spark, sc = get_spark(f"Query {QUERY} - {API}")
     energy_file = f"hdfs://namenode:54310/data/country_all.{FILE_FORMAT}"
-    check_hdfs(sc, energy_file, FILE_FORMAT)
+    check_hdfs(sc, energy_file)
     spark.stop()
 
     #----------------------------------------------- Execute job ------------------------------------------------#

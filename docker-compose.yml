@@ -41,6 +41,8 @@ services:
     environment:
       - SPARK_MODE=master
       - SPARK_CONF_spark_hadoop_fs_defaultFS=hdfs://namenode:54310
+      - NIFI_USR=${SINGLE_USER_CREDENTIALS_USERNAME}
+      - NIFI_PSW=${SINGLE_USER_CREDENTIALS_PASSWORD}
     ports:
       - '8080:8080'
       - '7077:7077'
@@ -107,20 +109,20 @@ services:
     networks: # networks to connect
       hadoop_network: # the name of the network
         ipv4_address: 10.0.0.8 # static ip of the container
-
-  grafana:
-    image: grafana/grafana-enterprise
-    container_name: grafana
-    hostname: grafana
-    restart: unless-stopped
-    environment:
-     - GF_SERVER_ROOT_URL=http://my.grafana.server/
-     - GF_PLUGINS_PREINSTALL=grafana-clock-panel
-    ports:
-      - '3000:3000'
-    networks:
-      hadoop_network: # the name of the network
-        ipv4_address: 10.0.0.7 # static ip of the container
+#
+#  grafana:
+#    image: grafana/grafana-enterprise
+#    container_name: grafana
+#    hostname: grafana
+#    restart: unless-stopped
+#    environment:
+#     - GF_SERVER_ROOT_URL=http://my.grafana.server/
+#     - GF_PLUGINS_PREINSTALL=grafana-clock-panel
+#    ports:
+#      - '3000:3000'
+#    networks:
+#      hadoop_network: # the name of the network
+#        ipv4_address: 10.0.0.7 # static ip of the container
 
 secrets:
   influxdb2-admin-username:

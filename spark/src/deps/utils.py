@@ -39,12 +39,12 @@ def get_df(spark: SparkSession, filepath: str, file_format:str) -> DataFrame:
     else: raise Exception(f"Unsupported file format: {file_format}")
     return df.toDF(*ORIGINAL_HEADER)
 
-def check_hdfs(sc: SparkContext, file_path: str, file_format:str):
+def check_hdfs(sc: SparkContext, file_path: str):
     while not exists_on_hdfs(file_path, sc):
         try:
             nr.run_nifi_flow()
-            time.sleep(5)
+            time.sleep(4)
         except Exception:
-            print(f"NiFi not up yet, waiting 5s…")
-            time.sleep(5)
+            print(f"NiFi not up yet, waiting…")
+            time.sleep(4)
     nr.stop_nifi_flow()

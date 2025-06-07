@@ -1,10 +1,7 @@
 import argparse
 import importlib
-import time
 
-from deps.hdfs_utils import exists_on_hdfs
 from deps.utils import get_spark, check_hdfs
-from deps import nifi_utils as nr
 
 
 if __name__ =="__main__":
@@ -24,7 +21,7 @@ if __name__ =="__main__":
     spark, sc = get_spark(f"Query {QUERY} - {API}")
     #----------------------------------------------- Check hdfs ------------------------------------------------#
     energy_file = f"hdfs://namenode:54310/data/country_all.{FILE_FORMAT}"
-    check_hdfs(sc, energy_file, FILE_FORMAT)
+    check_hdfs(sc, energy_file)
 
     #----------------------------------------------- Execute job -----------------------------------------------#
     _ = query_module.run(spark, sc, energy_file, FILE_FORMAT, TIMED=False)
