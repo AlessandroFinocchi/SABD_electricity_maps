@@ -19,7 +19,7 @@ def country(rdd_elem)        -> str:   return rdd_elem.split(",")[1]
 
 def year(rdd_elem)           -> int:   return int(rdd_elem.split(",")[0].split("-")[0])
 
-def month(rdd_elem)          -> int:   return int(rdd_elem.split(",")[0].split("-")[1])
+def month(rdd_elem)          -> str:   return rdd_elem.split(",")[0].split("-")[1]
 
 def intensity1(rdd_elem)     -> float: return float(rdd_elem.split(",")[2])
 
